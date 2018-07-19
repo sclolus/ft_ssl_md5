@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/18 08:46:07 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 04:22:58 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,5 +20,25 @@
 # include <assert.h> //
 
 # define INLINE __attribute__((always_inline)) inline
+# define NORETURN __attribute__((noreturn)) void
 
+void		print_memory(const void *addr, size_t size);
+
+
+/*
+** Hash functions
+*/
+
+char		*md5_hash(char *clear, uint64_t len);
+
+
+/*
+** Hash testers
+*/
+
+# define MAX_RANDOM_MESSAGE_LEN 4096
+# define RANDOM_INIT 0xBADA55
+
+NORETURN	md5_fuzzer(void);
+int			md5_tester(char *message, uint32_t *to_test_digest, uint64_t len);
 #endif

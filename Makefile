@@ -1,5 +1,9 @@
 NAME= ft_ssl_md5
-SRC= srcs/main.c
+SRC= srcs/main.c \
+	srcs/print_memory.c \
+	srcs/md5.c \
+	srcs/md5_fuzzer.c \
+	srcs/md5_tester.c
 HDRS= includes/ft_ssl_md5.h
 OBJ= $(SRC:.c=.o)
 CC= gcc

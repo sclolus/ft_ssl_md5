@@ -4,7 +4,7 @@ make || exit 1
 while [ 1 ];
 	  do
 min=1
-max=100
+max=10
 DIGIT_LEN=`jot -r 1 $min $max`
 STRING=`cat /dev/urandom | head -c $DIGIT_LEN`
 LEN=`echo -n "$STRING" | wc -c`
@@ -21,7 +21,7 @@ MY_HASH="`./ft_ssl_md5 "$STRING"`" && MD5_HASH="`echo "$STRING" | md5 -q`" &&
 		#		`echo "$STRING" | hexdump` ;
 		./ft_ssl_md5 "$STRING" > diff.txt
 		./a.out "$STRING" > diff_bin.txt
-#		diff *diff*
+		diff *diff*
 		echo FAILURE; exit 1;
 	fi;
 done;
