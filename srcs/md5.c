@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 04:09:51 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 05:12:20 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 09:54:37 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,25 +38,18 @@ static const uint32_t	g_md5_constants[64] = {
 	0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
 
-
-enum md5_states {
-	A = 0,
-	B,
-	C,
-	D,
-};
-
-INLINE static void	md5_padding(void *block_to_pad, char *clear, uint64_t total_len)
+INLINE static void	md5_padding(void *block_to_pad, uint8_t *clear, uint64_t total_len)
 {
+	uint64_t	printed_len;
+
 	ft_bzero(block_to_pad, 128);
 	ft_memcpy(block_to_pad, clear + total_len - total_len % 64, total_len % 64);
 	*((uint8_t*)block_to_pad + total_len % 64) |= 0x80;
+	printed_len = total_len * 8;
 	if (!ft_get_endianness())
-		total_len = swap_int64(total_len);
-	((uint64_t*)block_to_pad)[7 + 8 * ((total_len % 64) > 64 - 9)] = total_len * 8;
-	printf("total_len %% 64: %llu\n", total_len % 64);
+		printed_len = swap_int64(printed_len);
+	((uint64_t*)block_to_pad)[7 + 8 * ((total_len % 64) > 64 - 9)] = printed_len;
 	assert(!memcmp(block_to_pad, clear + total_len - total_len % 64,  total_len % 64));
-//	write(1, block_to_pad, 64);
 }
 
 # undef F
@@ -67,11 +60,6 @@ INLINE static void	md5_padding(void *block_to_pad, char *clear, uint64_t total_l
 # define G(B, C, D) ((B) & (D)) | ((C) & ~(D))
 # define H(B, C, D) (B) ^ (C) ^ (D)
 # define I(B, C, D) (C) ^ (B | ~(D))
-
-INLINE static uint32_t  left_rotate_32(uint32_t word, uint32_t delta)
-{
-	return ((word << delta) | (word >> ((sizeof(int32_t) * 8) - delta)));
-}
 
 INLINE static void	md5_round(uint32_t *block_states, uint32_t *block)
 {
@@ -103,7 +91,6 @@ INLINE static void	md5_round(uint32_t *block_states, uint32_t *block)
 			tmp_f = I(block_states[B], block_states[C], block_states[D]);
 			tmp_g = (i * 7) % 16;
 		}
-		//printf(2, "rotateLeft(%x + %x + %x + %x, %d) D: %x, C: %x, B: %x, %u\n", block_states[A], tmp_f, g_md5_constants[i], block[tmp_g], g_shift_deltas[i], block_states[D], block_states[C], block_states[B], tmp_g);
 		tmp_f += block_states[A] + g_md5_constants[i] + block[tmp_g];
 		block_states[A] = block_states[D];
 		block_states[D] = block_states[C];
@@ -161,11 +148,6 @@ static void	init_md5(uint32_t *states)
 	states[B] = 0xefcdab89;
 	states[C] = 0x98badcfe;
 	states[D] = 0x10325476;
-
-	/* states[A] = 0x01234567; */
-	/* states[B] = 0x89abcdef; */
-	/* states[C] = 0xfedcba98; */
-	/* states[D] = 0x76543210; */
 }
 
 uint32_t	 *md5_hash(void *clear, uint64_t len)

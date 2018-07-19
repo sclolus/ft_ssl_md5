@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 05:11:52 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 09:53:35 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,25 @@ void		print_memory(const void *addr, size_t size);
 ** Hash functions
 */
 
+// first states already defined in md5_states
+
+enum md5_states {
+	A = 0,
+	B,
+	C,
+	D,
+};
+
+enum sha256_states {
+	E = D + 1,
+	F,
+	G,
+	H,
+};
+
+
 uint32_t	*md5_hash(void *clear, uint64_t len);
+uint32_t	*sha256_hash(void *clear, uint64_t len);
 
 
 /*
