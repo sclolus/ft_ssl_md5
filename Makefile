@@ -4,11 +4,15 @@ SRC= srcs/main.c \
 	srcs/md5.c \
 	srcs/md5_fuzzer.c \
 	srcs/md5_tester.c \
-	srcs/sha256.c
+	srcs/sha256.c \
+	srcs/hash_tester.c \
+	srcs/hash_fuzzer.c \
+	srcs/parse_command_line.c \
+	srcs/usage.c
 HDRS= includes/ft_ssl_md5.h
 OBJ= $(SRC:.c=.o)
 CC= gcc
-CC_FLAGS= -v  -Wall -Werror -Wextra -Weverything  -g3 -fsanitize=address -fsanitize-blacklist=my_ignores.txt
+CC_FLAGS= -v  -Wall -Werror -Wextra -Weverything  -O0 -g3 -fsanitize=address -fsanitize-blacklist=my_ignores.txt
 LIBFT_PATH=./libft/
 FLAGS= -I./libft/includes -I./includes
 

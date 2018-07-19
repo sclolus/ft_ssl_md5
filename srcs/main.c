@@ -6,29 +6,37 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 02:14:47 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 10:15:28 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 15:48:18 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl_md5.h"
 #include <fcntl.h> //
+#include <CommonCrypto/CommonDigest.h>
+
+
 
 int main(int argc, char **argv)
 {
+	t_command_line	*cmd;
+
+	cmd = parse_command_line(argc, argv);
+	if (cmd)
+	{
+		printf("%s\n", cmd->command_name);
+		exit(EXIT_SUCCESS);
+	}
 	if (argc == 2)
 	{
 		uint64_t len = strlen(argv[1]);
 		uint32_t *digest = (uint32_t*)(void*)sha256_hash(argv[1], len);
 		if (digest == NULL)
 			return (EXIT_FAILURE);
-		printf("%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x\n", swap_int32(digest[0])
-			   , swap_int32(digest[1])
-			   , swap_int32(digest[2])
-			   , swap_int32(digest[3])
-			   , swap_int32(digest[4])
-			   , swap_int32(digest[5])
-			   , swap_int32(digest[6])
-			   , swap_int32(digest[7]));
+		uint32_t diff[8];
+		CC_SHA256(argv[1], (unsigned int)len, (unsigned char*)diff);
+		print_memory(digest, 32);
+		printf("----\n");
+		print_memory(diff, 32);
 		printf("%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x\n", (digest[0])
 			   , (digest[1])
 			   , (digest[2])
@@ -37,13 +45,18 @@ int main(int argc, char **argv)
 			   , (digest[5])
 			   , (digest[6])
 			   , (digest[7]));
-		/* if (!(md5_tester(argv[1], digest, len))) */
-		/* 	exit(EXIT_FAILURE); */
+		printf("%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x%8.8x\n", (diff[0])
+			   , (diff[1])
+			   , (diff[2])
+			   , (diff[3])
+			   , (diff[4])
+			   , (diff[5])
+			   , (diff[6])
+			   , (diff[7]));
 	}
 	else
 	{
-		md5_fuzzer();
-//		ft_error_exit(1, (char*[]){"Unimplemented!()"}, 1);
+		hash_fuzzer(CC_SHA256, sha256_hash);
 	}
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 04:09:51 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 09:54:37 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 11:38:29 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,11 @@ INLINE static void	md5_round(uint32_t *block_states, uint32_t *block)
 		i++;
 	}
 }
+
+# undef F
+# undef G
+# undef H
+# undef I
 
 INLINE static void	md5_main_loop(uint32_t *states
 						  , uint8_t *clear
