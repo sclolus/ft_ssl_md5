@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 04:12:19 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 04:20:50 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 05:12:09 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "ft_ssl_md5.h"
 
 
-INLINE int	md5_tester(char *message, uint32_t *to_test_digest, uint64_t len)
+INLINE int	md5_tester(void *message, uint32_t *to_test_digest, uint64_t len)
 {
 	uint32_t	diff[4];
 

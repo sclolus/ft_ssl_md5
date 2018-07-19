@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 04:11:02 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 04:22:41 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 04:28:03 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ NORETURN	md5_fuzzer(void) {
 		if (-1 == (ret = read(fd, message, read_size)))
 			exit (EXIT_FAILURE);
 		assert((size_t)ret == read_size);
-		uint64_t len = strlen(message);
+		uint64_t len = (size_t)ret;
+		printf("current message len: %llu\n", len);
 		uint32_t *digest = (uint32_t*)(void*)md5_hash(message, len);
 		if (digest == NULL)
 			exit (EXIT_FAILURE);

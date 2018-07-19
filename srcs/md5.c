@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 04:09:51 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 04:19:41 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 05:12:20 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,11 +168,11 @@ static void	init_md5(uint32_t *states)
 	/* states[D] = 0x76543210; */
 }
 
-char	 *md5_hash(char *clear, uint64_t len)
+uint32_t	 *md5_hash(void *clear, uint64_t len)
 {
 	static uint8_t	last_block[128];
 	uint32_t		states[4];
-	char			*digest;
+	uint32_t		*digest;
 
 	if (clear == NULL)
 		return (NULL);

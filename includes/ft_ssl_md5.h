@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 04:22:58 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/19 05:11:52 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void		print_memory(const void *addr, size_t size);
 ** Hash functions
 */
 
-char		*md5_hash(char *clear, uint64_t len);
+uint32_t	*md5_hash(void *clear, uint64_t len);
 
 
 /*
@@ -40,5 +40,5 @@ char		*md5_hash(char *clear, uint64_t len);
 # define RANDOM_INIT 0xBADA55
 
 NORETURN	md5_fuzzer(void);
-int			md5_tester(char *message, uint32_t *to_test_digest, uint64_t len);
+int			md5_tester(void *message, uint32_t *to_test_digest, uint64_t len);
 #endif
