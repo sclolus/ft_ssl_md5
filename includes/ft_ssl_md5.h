@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 15:53:21 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/20 15:52:23 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,15 @@ typedef enum	e_cmd_type
 	// please add more
 }				t_cmd_type;
 
+typedef union	u_flags t_flags;
+typedef struct	s_command_line t_command_line;
+typedef t_flags	*(*t_hash_cmd_parse)(int argc, char **argv, t_command_line *cmd);
+
 typedef struct s_hash_identity {
-	char		*name;
-	t_cmd_type	type;
-	uint8_t		pad[4];
+	char				*name;
+	t_hash_cmd_parse	cmd_parse_function;
+	t_cmd_type			type;
+	uint8_t				pad[4];
 }				t_hash_identity;
 
 extern const t_hash_identity	g_supported_hashs[SUPPORTED_TYPES];
@@ -48,6 +53,14 @@ extern const t_hash_identity	g_supported_hashs[SUPPORTED_TYPES];
 /*
 ** Command line parsing
 */
+
+typedef int32_t (*t_f_parse_callback)(t_command_line *);
+
+typedef struct	s_parse_callback {
+	t_f_parse_callback	callback;
+	char				flag_c;
+	uint8_t				pad[7];
+}				t_parse_callback;
 
 typedef struct	s_md5_flags
 {
@@ -78,6 +91,11 @@ typedef struct	s_command_line
 }			   t_command_line;
 
 t_command_line	*parse_command_line(int argc, char **argv);
+
+# define MD5_PARSING_FLAGS "pqrs:"
+# define MD5_FLAGS "pqrs"
+
+t_flags			*parse_md5(int argc, char **argv, t_command_line *cmd);
 
 void		print_memory(const void *addr, size_t size);
 

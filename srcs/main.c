@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 02:14:47 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 15:48:18 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/20 16:07:25 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ int main(int argc, char **argv)
 		printf("%s\n", cmd->command_name);
 		exit(EXIT_SUCCESS);
 	}
+	cmd = NULL;
 	if (argc == 2)
 	{
 		uint64_t len = strlen(argv[1]);

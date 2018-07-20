@@ -7,8 +7,10 @@ SRC= srcs/main.c \
 	srcs/sha256.c \
 	srcs/hash_tester.c \
 	srcs/hash_fuzzer.c \
-	srcs/parse_command_line.c \
+	srcs/parsing/parse_command_line.c \
+	srcs/parsing/parse_md5.c \
 	srcs/usage.c
+
 HDRS= includes/ft_ssl_md5.h
 OBJ= $(SRC:.c=.o)
 CC= gcc
