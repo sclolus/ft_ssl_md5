@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/20 15:21:43 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/20 16:26:14 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/20 16:47:37 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ static int32_t	reverse_callback(t_command_line *cmd)
 static int32_t	given_string_callback(t_command_line *cmd)
 {
 	cmd->flags.md5.s = 1;
-	cmd->argv += g_optind - 1;
+	cmd->strings_to_hash[cmd->nbr_strings] = g_optarg;
+	cmd->nbr_strings++;
 	return (0);
 }
 
@@ -48,7 +49,6 @@ t_flags	*parse_md5(int argc, char **argv, t_command_line *cmd)
 	char							retrieved_opt;
 
 	ft_bzero(&cmd->flags, sizeof(t_flags));
-	printf("asdf\n");
 	while ((retrieved_opt = (char)ft_getopt(argc, argv, MD5_PARSING_FLAGS)) != -1)
 	{
 		if (retrieved_opt == GETOPT_ERR_CHAR)
@@ -60,5 +60,7 @@ t_flags	*parse_md5(int argc, char **argv, t_command_line *cmd)
 							- MD5_FLAGS)].callback(cmd))
 			break;
 	}
+	cmd->filenames = argv + g_optind;
+	cmd->nbr_files = (uint64_t)argc - (uint64_t)g_optind;
 	return (&cmd->flags);
 }

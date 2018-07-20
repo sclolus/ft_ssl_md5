@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/20 15:52:23 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/20 16:40:34 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,10 @@ typedef uint32_t *(*t_hash_function)(void*, uint64_t);
 typedef struct	s_command_line
 {
 	char			*command_name;
-	char			**argv;
-	uint64_t		argc;
+	uint64_t		nbr_strings;
+	char			**strings_to_hash;
+	uint64_t		nbr_files;
+	char			**filenames;
 	t_cmd_type		type;
 	t_flags			flags;
 	uint8_t			pad[3];

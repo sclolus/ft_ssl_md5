@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 15:26:39 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/20 16:25:34 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/20 16:49:52 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,16 +81,26 @@ static void		display_command_line(t_command_line *cmd)
 
 	i = 0;
 	printf("name: %s\n", cmd->command_name);
-	while (cmd->argv[i])
+	while (i < cmd->nbr_strings)
 	{
-		printf("%u arg: %s\n", i, cmd->argv[i]);
+		printf("%u strings_to_hash: %s\n", i, cmd->strings_to_hash[i]);
+		i++;
+	}
+	while (i < cmd->nbr_files)
+	{
+		printf("%u filenames: %s\n", i, cmd->filenames[i]);
 		i++;
 	}
 	printf("type: %d\n", (int)cmd->type);
-	printf("argc: %llu\n", cmd->argc);
 	printf("flags: p: %hhu q: %hhu  r: %hhu s: %hhu\n", cmd->flags.md5.p, cmd->flags.md5.q, cmd->flags.md5.r, cmd->flags.md5.s);
 }
 
+static void		cmd_allocate_strings(t_command_line	*cmd, int argc)
+{
+	if (!(cmd->strings_to_hash = malloc(sizeof(char*) * (uint64_t)argc)))
+		exit(EXIT_FAILURE);
+	cmd->strings_to_hash[argc - 1] = NULL;
+}
 
 t_command_line	*parse_command_line(int argc, char **argv)
 {
@@ -102,14 +112,13 @@ t_command_line	*parse_command_line(int argc, char **argv)
 		return (NULL);
 	if (!(cmd.command_name = get_cmd_name(argv[1])))
 		ft_error_exit(1, (char*[]){"Unknown command name found"}, EXIT_FAILURE); // add usage
-	cmd.argv = argv + 1;
-	cmd.argc = (uint64_t)argc - 1;
 	cmd.type = get_cmd_type(cmd.command_name);
+	cmd_allocate_strings(&cmd, argc);
 	i = 0;
 	while (i < sizeof(g_supported_hashs) / sizeof(*g_supported_hashs))
 	{
 		if (g_supported_hashs[i].type == cmd.type)
-			g_supported_hashs[i].cmd_parse_function((int)cmd.argc, cmd.argv, &cmd);
+			g_supported_hashs[i].cmd_parse_function((int)argc - 1, argv + 1, &cmd);
 		i++;
 	}
 	display_command_line(&cmd);
