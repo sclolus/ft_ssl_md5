@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 02:14:47 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/24 22:57:55 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 01:21:51 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,10 @@
 #include <fcntl.h> //
 #include <CommonCrypto/CommonDigest.h>
 
-
+const t_hash_identity	g_supported_hashs[SUPPORTED_TYPES] = {
+	{"md5", parse_md5, md5_hash, CC_MD5, md5_cmd_exec, 4 * 4, MD5, {0}},
+	{"sha256", parse_sha256, sha256_hash, CC_SHA256, sha256_cmd_exec, 8 * 4, SHA256, {0}},
+}; // should do something about those extra fields
 
 int main(int argc, char **argv)
 {

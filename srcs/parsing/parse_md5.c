@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/20 15:21:43 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/24 23:13:36 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 01:12:30 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,14 @@ static int32_t	echo_stdin_callback(t_command_line *cmd)
 static int32_t	quiet_mode_callback(t_command_line *cmd)
 {
 	cmd->flags.md5.q = 1;
+	cmd->flags.md5.r = 0;
 	return (0);
 }
 
 static int32_t	reverse_callback(t_command_line *cmd)
 {
-	cmd->flags.md5.r = 1;
+	if (!cmd->flags.md5.q)
+		cmd->flags.md5.r = 1;
 	return (0);
 }
 

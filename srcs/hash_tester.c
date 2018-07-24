@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 12:51:07 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/24 23:59:09 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 01:33:09 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ int			hash_tester(void *message
 		print_memory(diff, hash_info->digest_size);
 		printf("original string: \"%s\"\n", message);
 		printf("my_hash:  ");
-		print_hash(to_test_digest, hash_info->digest_size);
+		print_hash(to_test_digest, hash_info->digest_size, 1);
 		printf("\n");
-		print_hash(diff, hash_info->digest_size);
+		print_hash(diff, hash_info->digest_size, 1);
 		printf("\n");
 		printf("true_hash:  ");
 		printf("FAILURE\n");

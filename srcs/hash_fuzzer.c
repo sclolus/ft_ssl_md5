@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 12:54:34 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/24 23:59:22 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 01:33:21 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ NORETURN	hash_fuzzer(t_hash_info *hash_info) {
 		{
 //			exit(EXIT_FAILURE);
 		}
-		print_hash(digest, hash_info->digest_size);
+		print_hash(digest, hash_info->digest_size, 1);
 		printf("\n");
 		free(message);
 	}

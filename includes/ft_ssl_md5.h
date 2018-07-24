@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 00:26:22 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 01:32:32 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct	s_command_line t_command_line;
 typedef t_flags	*(*t_hash_cmd_parse)(int argc, char **argv, t_command_line *cmd);
 typedef uint32_t *(*t_hash_function)(void*, uint64_t);
 typedef unsigned char *(*t_system_hash_function)(const void*, unsigned int, unsigned char*);
+typedef void	(*t_cmd_executor)(t_command_line *cmd);
 
 
 typedef struct s_hash_identity {
@@ -49,6 +50,7 @@ typedef struct s_hash_identity {
 	t_hash_cmd_parse		cmd_parse_function;
 	t_hash_function			hash_function;
 	t_system_hash_function	system_hash_function;
+	t_cmd_executor			cmd_executor;
 	uint64_t				digest_size;
 	t_cmd_type				type;
 	uint8_t					pad[4];
@@ -146,8 +148,10 @@ uint32_t	*sha256_hash(void *clear, uint64_t len);
 */
 
 NORETURN	exec_cmd(t_command_line *cmd);
+void		md5_cmd_exec(t_command_line *cmd);
+void		sha256_cmd_exec(t_command_line *cmd);
 
-void		print_hash(uint32_t *digest, uint64_t size);
+void		print_hash(uint32_t *digest, uint64_t size, int32_t swap_endian);
 
 /*
 ** Hash testers
