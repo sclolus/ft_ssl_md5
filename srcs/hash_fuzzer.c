@@ -6,14 +6,14 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 12:54:34 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 13:09:24 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/24 22:29:06 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl_md5.h"
 #include <fcntl.h>
 
-NORETURN	hash_fuzzer(t_system_hash_function system_hash, t_hash_function hash_function) {
+NORETURN	hash_fuzzer(t_hash_info *hash_info) {
 	srand(RANDOM_INIT);
 	int fd;
 	if (-1 == (fd = open("/dev/random", O_RDONLY)))
@@ -31,10 +31,10 @@ NORETURN	hash_fuzzer(t_system_hash_function system_hash, t_hash_function hash_fu
 		uint64_t len = (size_t)ret;
 
 		printf("current message len: %llu\n", len);
-		uint32_t *digest = (uint32_t*)(void*)hash_function(message, len);
+		uint32_t *digest = (uint32_t*)(void*)hash_info->hash(message, len);
 		if (digest == NULL)
 			exit (EXIT_FAILURE);
-		if (!(hash_tester(message, digest, len, system_hash)))
+		if (!(hash_tester(message, digest, len, hash_info)))
 		{
 //			exit(EXIT_FAILURE);
 		}

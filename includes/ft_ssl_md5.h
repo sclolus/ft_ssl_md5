@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/20 16:40:34 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/24 22:28:11 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,16 +130,23 @@ uint32_t	*sha256_hash(void *clear, uint64_t len);
 ** Hash testers
 */
 
+typedef unsigned char *(*t_system_hash_function)(const void*, unsigned int, unsigned char*);
+
+typedef struct	s_hash_info
+{
+	t_system_hash_function	system_hash;
+	t_hash_function			hash;
+	uint64_t				digest_size;
+}				t_hash_info;
+
 # define MAX_RANDOM_MESSAGE_LEN 512
 # define RANDOM_INIT 0xBADA55
-
-typedef unsigned char *(*t_system_hash_function)(const void*, unsigned int, unsigned char*);
 
 int			hash_tester(void *message
 					   , uint32_t *to_test_digest
 					   , uint64_t len
-					   , t_system_hash_function);
-NORETURN	hash_fuzzer(t_system_hash_function system_hash, t_hash_function hash_function);
+					   , t_hash_info *hash_info);
+NORETURN	hash_fuzzer(t_hash_info *hash_info);
 
 NORETURN	md5_fuzzer(void);
 int			md5_tester(void *message, uint32_t *to_test_digest, uint64_t len);

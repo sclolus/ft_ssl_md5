@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 02:14:47 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/20 16:07:25 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/24 22:35:21 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		hash_fuzzer(CC_SHA256, sha256_hash);
+		hash_fuzzer(&(t_hash_info){CC_SHA256, sha256_hash, 8 * 4});
+//		hash_fuzzer(&(t_hash_info){CC_MD5, md5_hash, 4 * 4});
 	}
 	return (0);
 }
