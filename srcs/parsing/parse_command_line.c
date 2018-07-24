@@ -6,46 +6,17 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 15:26:39 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/20 16:49:52 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 00:25:54 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl_md5.h"
 
-/* t_flags	*parse_command_args(int argc, char **argv) */
-/* { */
-/* 	const static t_parse_callback	callbacks[] = { */
-/* 		{&ft_append_flag_callback, SCRIPT_FLAGS[0], {0}}, */
-/* 		{&ft_no_sleep_flag_callback, SCRIPT_FLAGS[1], {0}}, */
-/* 		{&ft_pipe_flag_callback, SCRIPT_FLAGS[2], {0}}, */
-/* 		{&ft_keylog_flag_callback, SCRIPT_FLAGS[3], {0}}, */
-/* 		{&ft_play_back_flag_callback, SCRIPT_FLAGS[4], {0}}, */
-/* 		{&ft_quiet_flag_callback, SCRIPT_FLAGS[5], {0}}, */
-/* 		{&ft_timestamp_flag_callback, SCRIPT_FLAGS[6], {0}}, */
-/* 		{&ft_flush_time_flag_callback, SCRIPT_FLAGS[7], {0}}, */
-/* 	}; */
-/* 	char							retrieved_opt; */
-
-/* 	while ((retrieved_opt = (char)ft_getopt(argc, argv, SCRIPT_FLAGS_GETOPT)) != -1) */
-/* 	{ */
-/* 		if (retrieved_opt == GETOPT_ERR_CHAR) */
-/* 		{ */
-/* 			print_usage(); */
-/* 			_exit(EXIT_FAILURE); */
-/* 		} */
-/* 		if (callbacks[(int)(ft_strchr(SCRIPT_FLAGS, retrieved_opt) */
-/* 							- SCRIPT_FLAGS)].callback(&script_info)) */
-/* 			break; */
-/* 	} */
-/* 	post_opt_parsing(argc, argv, env, &script_info); */
-/* 	return (&script_info); */
-/* } */
-
-
+#include <CommonCrypto/CommonDigest.h>
 const t_hash_identity	g_supported_hashs[SUPPORTED_TYPES] = {
-	{"md5", parse_md5, MD5, {0}},
-	{"sha256", NULL, SHA256, {0}}
-};
+	{"md5", parse_md5, md5_hash, CC_MD5, 4 * 4, MD5, {0}},
+	{"sha256", parse_sha256, sha256_hash, CC_SHA256, 8 * 4, SHA256, {0}}
+}; // should do something about those extra fields
 
 static char		*get_cmd_name(char *command_name)
 {
@@ -80,6 +51,8 @@ static void		display_command_line(t_command_line *cmd)
 	uint32_t	i;
 
 	i = 0;
+	if (cmd)
+		return ;
 	printf("name: %s\n", cmd->command_name);
 	while (i < cmd->nbr_strings)
 	{
@@ -118,7 +91,10 @@ t_command_line	*parse_command_line(int argc, char **argv)
 	while (i < sizeof(g_supported_hashs) / sizeof(*g_supported_hashs))
 	{
 		if (g_supported_hashs[i].type == cmd.type)
+		{
 			g_supported_hashs[i].cmd_parse_function((int)argc - 1, argv + 1, &cmd);
+			cmd.hash = (g_supported_hashs + i);
+		}
 		i++;
 	}
 	display_command_line(&cmd);

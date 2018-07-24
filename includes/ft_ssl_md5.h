@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/24 22:28:11 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 00:26:22 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,18 @@ typedef enum	e_cmd_type
 typedef union	u_flags t_flags;
 typedef struct	s_command_line t_command_line;
 typedef t_flags	*(*t_hash_cmd_parse)(int argc, char **argv, t_command_line *cmd);
+typedef uint32_t *(*t_hash_function)(void*, uint64_t);
+typedef unsigned char *(*t_system_hash_function)(const void*, unsigned int, unsigned char*);
+
 
 typedef struct s_hash_identity {
-	char				*name;
-	t_hash_cmd_parse	cmd_parse_function;
-	t_cmd_type			type;
-	uint8_t				pad[4];
+	char					*name;
+	t_hash_cmd_parse		cmd_parse_function;
+	t_hash_function			hash_function;
+	t_system_hash_function	system_hash_function;
+	uint64_t				digest_size;
+	t_cmd_type				type;
+	uint8_t					pad[4];
 }				t_hash_identity;
 
 extern const t_hash_identity	g_supported_hashs[SUPPORTED_TYPES];
@@ -62,6 +68,15 @@ typedef struct	s_parse_callback {
 	uint8_t				pad[7];
 }				t_parse_callback;
 
+typedef struct	s_sha256_flags
+{
+	uint8_t	p : 1;
+	uint8_t	q : 1;
+	uint8_t	r : 1;
+	uint8_t	s : 1;
+	uint8_t	pad : 4;
+}				t_sha256_flags;
+
 typedef struct	s_md5_flags
 {
 	uint8_t	p : 1;
@@ -71,33 +86,35 @@ typedef struct	s_md5_flags
 	uint8_t	pad : 4;
 }				t_md5_flags;
 
-
 typedef union	u_flags
 {
-	t_md5_flags	md5;
+	t_md5_flags		md5;
+	t_sha256_flags	sha256;
 }				t_flags;
-
-typedef uint32_t *(*t_hash_function)(void*, uint64_t);
 
 typedef struct	s_command_line
 {
-	char			*command_name;
-	uint64_t		nbr_strings;
-	char			**strings_to_hash;
-	uint64_t		nbr_files;
-	char			**filenames;
-	t_cmd_type		type;
-	t_flags			flags;
-	uint8_t			pad[3];
-	t_hash_function	hash_function;
+	char					*command_name;
+	uint64_t				nbr_strings;
+	char					**strings_to_hash;
+	uint64_t				nbr_files;
+	char					**filenames;
+	t_cmd_type				type;
+	t_flags					flags;
+	uint8_t					pad[3];
+	const t_hash_identity	*hash;
 }			   t_command_line;
 
 t_command_line	*parse_command_line(int argc, char **argv);
 
 # define MD5_PARSING_FLAGS "pqrs:"
 # define MD5_FLAGS "pqrs"
+# define SHA256_PARSING_FLAGS "pqrs:"
+# define SHA256_FLAGS "pqrs"
+
 
 t_flags			*parse_md5(int argc, char **argv, t_command_line *cmd);
+t_flags			*parse_sha256(int argc, char **argv, t_command_line *cmd);
 
 void		print_memory(const void *addr, size_t size);
 
@@ -121,16 +138,20 @@ enum sha256_states {
 	H,
 };
 
-
 uint32_t	*md5_hash(void *clear, uint64_t len);
 uint32_t	*sha256_hash(void *clear, uint64_t len);
 
+/*
+** Command line execution
+*/
+
+NORETURN	exec_cmd(t_command_line *cmd);
+
+void		print_hash(uint32_t *digest, uint64_t size);
 
 /*
 ** Hash testers
 */
-
-typedef unsigned char *(*t_system_hash_function)(const void*, unsigned int, unsigned char*);
 
 typedef struct	s_hash_info
 {

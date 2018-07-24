@@ -6,24 +6,11 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 12:51:07 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/24 22:34:35 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/24 23:59:09 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl_md5.h"
-
-static void	print_hash(uint32_t *digest, uint64_t size)
-{
-	uint32_t	i;
-
-	i = 0;
-	while (i < size / 4)
-	{
-		printf("%8.8x", (digest[i]));
-		i++;
-	}
-	printf("\n");
-}
 
 int			hash_tester(void *message
 					   , uint32_t *to_test_digest
@@ -39,11 +26,12 @@ int			hash_tester(void *message
 		printf("original string: \"%s\"\n", message);
 		printf("my_hash:  ");
 		print_hash(to_test_digest, hash_info->digest_size);
+		printf("\n");
 		print_hash(diff, hash_info->digest_size);
+		printf("\n");
 		printf("true_hash:  ");
 		printf("FAILURE\n");
 		return (0);
 	}
-	print_hash(to_test_digest, hash_info->digest_size);
 	return (1);
 }

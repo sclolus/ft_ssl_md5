@@ -6,23 +6,28 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/07/11 05:02:58 by sclolus           #+#    #+#             */
-/*   Updated: 2017/09/18 18:45:10 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 00:21:24 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #include <fcntl.h>
 
-static void		ft_get_file_content_string(t_string *string, int fd)
+static int32_t		ft_get_file_content_string(t_string *string, int fd)
 {
 	static char	buffer[BUFF_SIZE];
 	ssize_t		n;
 
 	while ((n = read(fd, buffer, BUFF_SIZE)))
+	{
+		if (n == -1)
+			return (-1);
 		ft_t_string_concat_len(string, buffer, n);
+	}
+	return (0);
 }
 
-char			*ft_get_file_content(char *filename)
+t_string	ft_get_file_content(char *filename)
 {
 	t_string	string;
 	int			fd;
@@ -36,9 +41,15 @@ char			*ft_get_file_content(char *filename)
 		ft_error(2, (char*[]){ERR_FILE_OPEN
 					, filename}, 0);
 		free(string.string);
-		return (NULL);
+		return ((t_string){0, 0, NULL});
 	}
 	string.string[0] = '\0';
-	ft_get_file_content_string(&string, fd);
-	return (string.string);
+	if (-1 == (ft_get_file_content_string(&string, fd)))
+	{
+		free(string.string);
+		close(fd);
+		return ((t_string){0, 0, NULL});
+	}
+	close(fd);
+	return (string);
 }
