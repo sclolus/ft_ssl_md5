@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 02:53:08 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 21:57:30 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,9 +176,6 @@ int			hash_tester(void *message
 					   , uint64_t len
 					   , t_hash_info *hash_info);
 NORETURN	hash_fuzzer(t_hash_info *hash_info);
-
-NORETURN	md5_fuzzer(void);
-int			md5_tester(void *message, uint32_t *to_test_digest, uint64_t len);
 
 
 /*

@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/25 02:45:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 03:03:04 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 20:16:31 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,9 @@ INLINE static void		sha512_padding(uint8_t *clear, uint8_t *last_blocks
 	*((uint8_t*)last_blocks + len % 128) |= 0x80;
 	printed_len = len * 8;
 	if (ft_get_endianness())
-		printed_len = ((__uint128_t)swap_int64((uint64_t)(printed_len >> 64)) << 64)
-			| (__uint128_t)(swap_int64((uint64_t)printed_len));
-	((__uint128_t*)(void*)last_blocks)[7 + 16 * ((len % 128) > 128 - 9)] = printed_len;
+		printed_len = ((__uint128_t)(swap_int64((uint64_t)printed_len)) << 64);
+	((__uint128_t*)(void*)last_blocks)[7 + 8 * ((len % 128) > 128 - 17)] = printed_len;
+	print_memory(last_blocks, 256);
 	assert(!memcmp(last_blocks, clear + len - len % 128, len % 128));
 }
 
@@ -63,16 +63,17 @@ INLINE static void		sha512_padding(uint8_t *clear, uint8_t *last_blocks
 INLINE static void	init_message_schedule_array(uint64_t *array, uint64_t *block)
 {
 	uint64_t	i;
-	uint64_t	j = 0;
 	uint64_t	tmp_1;
 	uint64_t	tmp_2;
 
 	ft_bzero(array, 80 * sizeof(uint64_t)); //should be removed
+	i = 0;
+	ft_memcpy(array, block, 16 * sizeof(uint64_t));
 	if (ft_get_endianness())
-		while (j < 16)
+		while (i < 16)
 		{
-			array[j] = swap_int64(block[j]);
-			j++;
+			array[i] = swap_int64(array[i]);
+			i++;
 		}
 	i = 16;
 	while (i < 80)
@@ -86,6 +87,9 @@ INLINE static void	init_message_schedule_array(uint64_t *array, uint64_t *block)
 		array[i] = array[i - 16] + tmp_1 + array[i - 7] + tmp_2;
 		i++;
 	}
+	printf("array-\n");
+	print_memory(array, 80 * 8);
+	printf("end-array-\n");
 }
 
 INLINE static void	sha512_round(uint64_t *states, uint64_t *message_schedule_array)
@@ -149,7 +153,7 @@ INLINE static void	sha512_main_loop(uint64_t *states, uint64_t *clear
 		i++;
 	}
 	i = 0;
-	extra_rounds = 1 + !!((len % 128) > (128 - 9));
+	extra_rounds = 1 + !!((len % 128) > (128 - 17));
 	while (i < extra_rounds) {
 		ft_memcpy(block_states, states, sizeof(block_states));
 		init_message_schedule_array(message_schedule_array, last_blocks + i * 16);
@@ -183,7 +187,7 @@ uint64_t	 *sha512_hash(void *clear, uint64_t len)
 	if (ft_get_endianness())
 	{
 		i = 0;
-		while (i < 8)
+		while (i < sizeof(states) / sizeof(*states))
 		{
 			states[i] = swap_int64(states[i]);
 			i++;

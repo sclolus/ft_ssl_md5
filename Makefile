@@ -2,8 +2,6 @@ NAME= ft_ssl
 SRC= srcs/main.c \
 	srcs/print_memory.c \
 	srcs/md5.c \
-	srcs/md5_fuzzer.c \
-	srcs/md5_tester.c \
 	srcs/sha256.c \
 	srcs/hash_tester.c \
 	srcs/hash_fuzzer.c \

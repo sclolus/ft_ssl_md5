@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 12:51:07 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 01:33:09 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 18:11:58 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,12 @@ int			hash_tester(void *message
 
 	hash_info->system_hash(message, (unsigned int)len, (unsigned char*)diff);
 	if (ft_memcmp(to_test_digest, diff, hash_info->digest_size)) {
+
+		printf("------>digest memory\n");
 		print_memory(to_test_digest, hash_info->digest_size);
+		printf("------>true digest memory\n");
 		print_memory(diff, hash_info->digest_size);
-		printf("original string: \"%s\"\n", message);
+		printf("\noriginal string: \"%s\"\n", message);
 		printf("my_hash:  ");
 		print_hash(to_test_digest, hash_info->digest_size, 1);
 		printf("\n");

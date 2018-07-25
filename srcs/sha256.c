@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 05:11:08 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 02:44:08 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 19:05:49 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,16 +59,17 @@ INLINE static void		sha256_padding(uint8_t *clear, uint8_t *last_blocks
 INLINE static void	init_message_schedule_array(uint32_t *array, uint32_t *block)
 {
 	uint64_t	i;
-	uint32_t	j = 0;
 	uint32_t	tmp_1;
 	uint32_t	tmp_2;
 
 	ft_bzero(array, 64 * sizeof(uint32_t)); //should be removed
+	ft_memcpy(array, block, 16 * sizeof(uint32_t));
+	i = 0;
 	if (ft_get_endianness())
-		while (j < 16)
+		while (i < 16)
 		{
-			array[j] = swap_int32(block[j]);
-			j++;
+			array[i] = swap_int32(array[i]);
+			i++;
 		}
 	i = 16;
 	while (i < 64)
