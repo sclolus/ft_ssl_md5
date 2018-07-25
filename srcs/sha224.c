@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/25 02:37:19 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 19:05:43 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 22:31:52 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static const uint32_t	g_sha224_constants[64] = {
 	0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
 
-INLINE static void		sha224_init(uint32_t *states)
+static void		sha224_init(uint32_t *states)
 {
 	states[A] = 0xc1059ed8;
 	states[B] = 0x367cd507;
@@ -40,8 +40,8 @@ INLINE static void		sha224_init(uint32_t *states)
 	states[H] = 0xbefa4fa4;
 }
 
-INLINE static void		sha224_padding(uint8_t *clear, uint8_t *last_blocks
-									   , uint64_t len)
+static void		sha224_padding(uint8_t *clear, uint8_t *last_blocks
+									, uint64_t len)
 {
 	uint64_t	printed_len;
 
@@ -51,12 +51,11 @@ INLINE static void		sha224_padding(uint8_t *clear, uint8_t *last_blocks
 	printed_len = len * 8;
 	if (ft_get_endianness())
 		printed_len = swap_int64(printed_len);
-	((uint64_t*)(void*)last_blocks)[7 + 8 * ((len % 64) > 64 - 9)] = printed_len;
+	((uint64_t*)(void*)last_blocks)[7 + 8 * ((len % 64) > 55)] = printed_len;
 	assert(!memcmp(last_blocks, clear + len - len % 64, len % 64));
 }
 
-
-INLINE static void	init_message_schedule_array(uint32_t *array, uint32_t *block)
+static void	init_message_schedule_array(uint32_t *array, uint32_t *block)
 {
 	uint64_t	i;
 	uint32_t	tmp_1;
@@ -85,7 +84,7 @@ INLINE static void	init_message_schedule_array(uint32_t *array, uint32_t *block)
 	}
 }
 
-INLINE static void	sha224_round(uint32_t *states, uint32_t *message_schedule_array)
+static void	sha224_round(uint32_t *states, uint32_t *message_schedule_array)
 {
 	uint64_t	i;
 	uint32_t	s1;
@@ -101,11 +100,13 @@ INLINE static void	sha224_round(uint32_t *states, uint32_t *message_schedule_arr
 		s1 = (right_rotate_32(states[E], 6)) ^ (right_rotate_32(states[E], 11))
 			^ (right_rotate_32(states[E], 25));
 		ch = (states[E] & states[F]) ^ (~(states[E]) & states[G]);
-		tmp1 = states[H] + s1 + ch + g_sha224_constants[i] + message_schedule_array[i];
+		tmp1 = states[H] + s1 + ch + g_sha224_constants[i]
+			+ message_schedule_array[i];
 		s0 = (right_rotate_32(states[A], 2))
 			^ (right_rotate_32(states[A], 13))
 			^ (right_rotate_32(states[A], 22));
-		maj = (states[A] & states[B]) ^ (states[A] & states[C]) ^ (states[B] & states[C]);
+		maj = (states[A] & states[B]) ^ (states[A] & states[C])
+			^ (states[B] & states[C]);
 		tmp2 = s0 + maj;
 		states[H] = states[G];
 		states[G] = states[F];
@@ -119,8 +120,8 @@ INLINE static void	sha224_round(uint32_t *states, uint32_t *message_schedule_arr
 	}
 }
 
-INLINE static void	sha224_main_loop(uint32_t *states, uint32_t *clear
-									 , uint32_t *last_blocks, uint64_t len)
+static void	sha224_main_loop(uint32_t *states, uint32_t *clear
+									, uint32_t *last_blocks, uint64_t len)
 {
 	uint64_t		i;
 	uint64_t		nbr_blocks;
@@ -147,9 +148,11 @@ INLINE static void	sha224_main_loop(uint32_t *states, uint32_t *clear
 	}
 	i = 0;
 	extra_rounds = 1 + !!((len % 64) > (64 - 9));
-	while (i < extra_rounds) {
+	while (i < extra_rounds)
+	{
 		ft_memcpy(block_states, states, sizeof(block_states));
-		init_message_schedule_array(message_schedule_array, last_blocks + i * 16);
+		init_message_schedule_array(message_schedule_array
+									, last_blocks + i * 16);
 		sha224_round(block_states, message_schedule_array);
 		states[A] += block_states[A];
 		states[B] += block_states[B];
@@ -163,7 +166,7 @@ INLINE static void	sha224_main_loop(uint32_t *states, uint32_t *clear
 	}
 }
 
-uint32_t	 *sha224_hash(void *clear, uint64_t len)
+uint32_t	*sha224_hash(void *clear, uint64_t len)
 {
 	uint32_t		states[8];
 	static uint8_t	last_blocks[128];

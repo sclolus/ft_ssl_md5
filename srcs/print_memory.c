@@ -6,20 +6,13 @@
 /*   By: exam <marvin@42.fr>                        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/11/22 10:02:01 by exam              #+#    #+#             */
-/*   Updated: 2018/07/19 03:08:31 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 22:24:22 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
+#include "ft_ssl_md5.h"
 
-void	ft_putchar(char c);
-void	ft_putchar(char c)
-{
-	write (1, &c, 1);
-}
-
-void	ft_putnbr_base(int nbr, char *base);
-void	ft_putnbr_base(int nbr, char *base)
+static void	ft_putnbr_base(int nbr, char *base)
 {
 	if (nbr > 15)
 	{
@@ -27,11 +20,10 @@ void	ft_putnbr_base(int nbr, char *base)
 		ft_putnbr_base(nbr % 16, base);
 	}
 	else
-		ft_putchar(base[nbr]);
+		ft_putchar((unsigned char)base[nbr]);
 }
 
-void	ft_put_blanks(size_t size);
-void	ft_put_blanks(size_t size)
+static void	ft_put_blanks(size_t size)
 {
 	size_t	i;
 
@@ -46,9 +38,7 @@ void	ft_put_blanks(size_t size)
 	}
 }
 
-/*bonjour jean baptiste, ca cheat bien ?*/
-void	ft_print_memory(const void *addr, size_t size);
-void	ft_print_memory(const void *addr, size_t size)
+static void	ft_print_memory(const void *addr, size_t size)
 {
 	const unsigned char	*tmp;
 	size_t				i;
@@ -71,13 +61,12 @@ void	ft_print_memory(const void *addr, size_t size)
 		if (tmp[i] < 32 || tmp[i] >= 127)
 			ft_putchar('.');
 		else
-			ft_putchar((char)tmp[i]);
+			ft_putchar((unsigned char)tmp[i]);
 		i++;
 	}
 }
 
-void	print_memory(const void *addr, size_t size);
-void	print_memory(const void *addr, size_t size)
+void		print_memory(const void *addr, size_t size)
 {
 	if (!addr)
 		return ;

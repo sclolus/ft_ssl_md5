@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 21:57:30 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 23:42:14 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,7 @@ void		sha256_cmd_exec(t_command_line *cmd);
 
 t_string	read_message_from_stdin(void);
 void		print_hash(uint32_t *digest, uint64_t size, int32_t swap_endian);
+void		print_memory(const void *addr, size_t size);
 
 /*
 ** Hash testers

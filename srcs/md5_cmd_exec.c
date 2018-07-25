@@ -6,14 +6,16 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/25 01:02:45 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 02:33:07 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 22:02:37 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl_md5.h"
 #include <CommonCrypto/CommonDigest.h>
 
-static void	print_string_digest(t_command_line *cmd, char *string, uint32_t *digest)
+static void	print_string_digest(t_command_line *cmd
+								, char *string
+								, uint32_t *digest)
 {
 	if (!cmd->flags.md5.q && !cmd->flags.md5.r)
 		printf("%s (\"%s\") = ", cmd->command_name, string);
@@ -29,7 +31,9 @@ static void	print_string_digest(t_command_line *cmd, char *string, uint32_t *dig
 	printf("\n");
 }
 
-static void	print_file_digest(t_command_line *cmd, char *name, uint32_t *digest)
+static void	print_file_digest(t_command_line *cmd
+								, char *name
+								, uint32_t *digest)
 {
 	if (!cmd->flags.md5.q && !cmd->flags.md5.r)
 		printf("%s (%s) = ", cmd->command_name, name);
@@ -47,7 +51,7 @@ static void	print_file_digest(t_command_line *cmd, char *name, uint32_t *digest)
 
 static void	hash_strings(t_command_line *cmd)
 {
- 	uint32_t	i;
+	uint32_t	i;
 	uint32_t	*digest;
 	uint64_t	len;
 
@@ -56,9 +60,11 @@ static void	hash_strings(t_command_line *cmd)
 	{
 		len = ft_strlen(cmd->strings_to_hash[i]);
 		digest = cmd->hash->hash_function(cmd->strings_to_hash[i], len);
-		assert(hash_tester(cmd->strings_to_hash[i], digest, len, &(t_hash_info){cmd->hash->system_hash_function
-							   , cmd->hash->hash_function
-							   , cmd->hash->digest_size})); //please fix the hashs of directories...
+		assert(hash_tester(cmd->strings_to_hash[i], digest, len
+								, &(t_hash_info){cmd->hash->system_hash_function
+								, cmd->hash->hash_function
+								, cmd->hash->digest_size}));
+//please fix the hashs of directories...
 		print_string_digest(cmd, cmd->strings_to_hash[i], digest);
 		free(digest);
 		i++;
@@ -79,9 +85,10 @@ static void	hash_file(t_command_line *cmd, char *filename)
 	}
 	digest = cmd->hash->hash_function(message.string, message.len);
 	assert(hash_tester(message.string, digest, message.len
-					   , &(t_hash_info){cmd->hash->system_hash_function
-							   , cmd->hash->hash_function
-							   , cmd->hash->digest_size})); //please fix the hashs of directories...
+					, &(t_hash_info){cmd->hash->system_hash_function
+					, cmd->hash->hash_function
+					, cmd->hash->digest_size}));
+//please fix the hashs of directories...
 	print_file_digest(cmd, filename, digest);
 	free(message.string);
 	free(digest);
@@ -99,8 +106,9 @@ static void	hash_files(t_command_line *cmd)
 	}
 }
 
-
-static void	print_stdin_message_digest(t_command_line *cmd, t_string *message, uint32_t *digest)
+static void	print_stdin_message_digest(t_command_line *cmd
+										, t_string *message
+										, uint32_t *digest)
 {
 	if (cmd->flags.md5.p)
 		write(1, message->string, message->len);
@@ -113,9 +121,11 @@ static void	hash_stdin_message(t_command_line *cmd, t_string message)
 	uint32_t	*digest;
 
 	digest = cmd->hash->hash_function(message.string, message.len);
-	assert(hash_tester(message.string, digest, message.len, &(t_hash_info){cmd->hash->system_hash_function
+	assert(hash_tester(message.string, digest, message.len
+					, &(t_hash_info){cmd->hash->system_hash_function
 					, cmd->hash->hash_function
-					, cmd->hash->digest_size})); //please fix the hashs of directories...
+					, cmd->hash->digest_size}));
+//please fix the hashs of directories...
 	print_stdin_message_digest(cmd, &message, digest);
 	free(digest);
 }
