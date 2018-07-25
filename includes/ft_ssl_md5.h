@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 01:32:32 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 01:55:28 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,6 +151,7 @@ NORETURN	exec_cmd(t_command_line *cmd);
 void		md5_cmd_exec(t_command_line *cmd);
 void		sha256_cmd_exec(t_command_line *cmd);
 
+t_string	read_message_from_stdin(void);
 void		print_hash(uint32_t *digest, uint64_t size, int32_t swap_endian);
 
 /*

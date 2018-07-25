@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/25 01:02:45 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 01:32:52 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 02:33:07 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,8 +99,36 @@ static void	hash_files(t_command_line *cmd)
 	}
 }
 
+
+static void	print_stdin_message_digest(t_command_line *cmd, t_string *message, uint32_t *digest)
+{
+	if (cmd->flags.md5.p)
+		write(1, message->string, message->len);
+	print_hash(digest, cmd->hash->digest_size, 1);
+	printf("\n");
+}
+
+static void	hash_stdin_message(t_command_line *cmd, t_string message)
+{
+	uint32_t	*digest;
+
+	digest = cmd->hash->hash_function(message.string, message.len);
+	assert(hash_tester(message.string, digest, message.len, &(t_hash_info){cmd->hash->system_hash_function
+					, cmd->hash->hash_function
+					, cmd->hash->digest_size})); //please fix the hashs of directories...
+	print_stdin_message_digest(cmd, &message, digest);
+	free(digest);
+}
+
 void	md5_cmd_exec(t_command_line *cmd)
 {
+	t_string	stdin_message;
+
 	hash_strings(cmd);
+	if (cmd->flags.md5.p || (!cmd->nbr_strings && !cmd->nbr_files))
+	{
+		stdin_message = read_message_from_stdin();
+		hash_stdin_message(cmd, stdin_message);
+	}
 	hash_files(cmd);
 }
