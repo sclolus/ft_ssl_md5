@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 02:40:34 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 02:53:08 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ typedef enum	e_cmd_type
 	MD5 = 0,
 	SHA256,
 	SHA224,
+	SHA512,
 	SUPPORTED_TYPES,
 	// please add more
 }				t_cmd_type;
@@ -143,6 +144,7 @@ enum sha256_states {
 uint32_t	*md5_hash(void *clear, uint64_t len);
 uint32_t	*sha256_hash(void *clear, uint64_t len);
 uint32_t	*sha224_hash(void *clear, uint64_t len);
+uint64_t	*sha512_hash(void *clear, uint64_t len);
 
 /*
 ** Command line execution

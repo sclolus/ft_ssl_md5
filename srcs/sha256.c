@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 05:11:08 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/19 14:43:18 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/25 02:44:08 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,6 @@ INLINE static void	init_message_schedule_array(uint32_t *array, uint32_t *block)
 		array[i] = array[i - 16] + tmp_1 + array[i - 7] + tmp_2;
 		i++;
 	}
-	/* printf("init\n"); */
-	/* print_memory(array, 64 * sizeof(uint32_t)); */
-	/* printf("init_end\n"); */
 }
 
 INLINE static void	sha256_round(uint32_t *states, uint32_t *message_schedule_array)
