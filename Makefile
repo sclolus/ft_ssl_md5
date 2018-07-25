@@ -15,7 +15,8 @@ SRC= srcs/main.c \
 	srcs/exec_cmd.c \
 	srcs/md5_cmd_exec.c \
 	srcs/sha256_cmd_exec.c \
-	srcs/read_message_from_stdin.c
+	srcs/read_message_from_stdin.c \
+	srcs/sha224.c
 
 HDRS= includes/ft_ssl_md5.h
 OBJ= $(SRC:.c=.o)
