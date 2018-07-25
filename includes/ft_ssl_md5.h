@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 23:42:14 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 00:55:17 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,30 +34,66 @@ typedef enum	e_cmd_type
 	SHA256,
 	SHA224,
 	SHA512,
+	BASE64,
+	DES,
 	SUPPORTED_TYPES,
 	// please add more
 }				t_cmd_type;
 
+typedef enum	e_cmd_kind
+{
+	HASH = 0,
+	SYMMETRIC_ENCRYPTION,
+	ASYMMETRIC_ENCRYPTION,
+	SUPPORTED_KINDS,
+}				t_cmd_kind;
+
 typedef union	u_flags t_flags;
 typedef struct	s_command_line t_command_line;
-typedef t_flags	*(*t_hash_cmd_parse)(int argc, char **argv, t_command_line *cmd);
+typedef t_flags	*(*t_cmd_parse)(int argc, char **argv, t_command_line *cmd);
 typedef uint32_t *(*t_hash_function)(void*, uint64_t);
 typedef unsigned char *(*t_system_hash_function)(const void*, unsigned int, unsigned char*);
 typedef void	(*t_cmd_executor)(t_command_line *cmd);
 
 
 typedef struct s_hash_identity {
-	char					*name;
-	t_hash_cmd_parse		cmd_parse_function;
 	t_hash_function			hash_function;
 	t_system_hash_function	system_hash_function;
-	t_cmd_executor			cmd_executor;
 	uint64_t				digest_size;
-	t_cmd_type				type;
-	uint8_t					pad[4];
 }				t_hash_identity;
 
+typedef struct	s_se_identity
+{
+	char	*key; // non contractual
+	char	*salt; // non contractual
+}				t_se_identity;
+
+typedef struct	s_ae_identity
+{
+	char	*key; // non contractual
+	char	*salt; // non contractual
+}				t_ae_identity;
+
+typedef union	u_cmd_internal
+{
+	t_hash_identity	hash;
+	t_se_identity	se;
+	t_ae_identity	ae;
+}				t_cmd_internal;
+
+typedef struct	s_cmd_identity
+{
+	char			*name;
+	t_cmd_parse		cmd_parse_function;
+	t_cmd_executor	cmd_executor;
+	t_cmd_internal	info;
+	t_cmd_type		type;
+	t_cmd_kind		kind;
+}				t_cmd_identity;
+
 extern const t_hash_identity	g_supported_hashs[SUPPORTED_TYPES];
+
+extern const t_cmd_identity		g_supported_cmds[SUPPORTED_TYPES];
 
 /*
 ** Command line parsing
@@ -95,20 +131,45 @@ typedef union	u_flags
 	t_sha256_flags	sha256;
 }				t_flags;
 
-typedef struct	s_command_line
+typedef struct	s_hash_cmd
 {
-	char					*command_name;
 	uint64_t				nbr_strings;
 	char					**strings_to_hash;
 	uint64_t				nbr_files;
 	char					**filenames;
-	t_cmd_type				type;
 	t_flags					flags;
-	uint8_t					pad[3];
-	const t_hash_identity	*hash;
+	uint8_t					pad[7];
+}				t_hash_cmd;
+
+typedef struct	s_se_cmd
+{
+	const t_se_identity	*se;
+}				t_se_cmd;
+
+typedef union	u_cmd_info
+{
+	t_hash_cmd	hash;
+	t_se_cmd	se;
+}				t_cmd_info;
+
+typedef struct	s_command_line
+{
+	char					*command_name;
+	t_cmd_info				info;
+	t_cmd_type				type;
+	uint8_t					pad[4];
+	const t_cmd_identity	*identity;
 }			   t_command_line;
 
 t_command_line	*parse_command_line(int argc, char **argv);
+
+/*
+** Parsing Payloads
+*/
+void			cmd_hash_payload(t_command_line *cmd, int argc, char **argv);
+void			cmd_se_payload(t_command_line *cmd, int argc, char **argv);
+void			cmd_ae_payload(t_command_line *cmd, int argc, char **argv);
+
 
 # define MD5_PARSING_FLAGS "pqrs:"
 # define MD5_FLAGS "pqrs"
@@ -118,8 +179,7 @@ t_command_line	*parse_command_line(int argc, char **argv);
 
 t_flags			*parse_md5(int argc, char **argv, t_command_line *cmd);
 t_flags			*parse_sha256(int argc, char **argv, t_command_line *cmd);
-
-void		print_memory(const void *addr, size_t size);
+void			print_memory(const void *addr, size_t size);
 
 /*
 ** Hash functions

@@ -8,6 +8,9 @@ SRC= srcs/main.c \
 	srcs/parsing/parse_command_line.c \
 	srcs/parsing/parse_md5.c \
 	srcs/parsing/parse_sha256.c \
+	srcs/parsing/parse_hash.c \
+	srcs/parsing/parse_se.c \
+	srcs/parsing/parse_ae.c \
 	srcs/usage.c \
 	srcs/print_hash.c \
 	srcs/exec_cmd.c \

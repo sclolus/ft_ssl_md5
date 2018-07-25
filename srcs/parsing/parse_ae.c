@@ -1,20 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_cmd.c                                         :+:      :+:    :+:   */
+/*   parse_ae.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/24 22:39:42 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 00:43:53 by sclolus          ###   ########.fr       */
+/*   Created: 2018/07/26 00:03:15 by sclolus           #+#    #+#             */
+/*   Updated: 2018/07/26 00:03:30 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl_md5.h"
-#include <CommonCrypto/CommonDigest.h>
 
-NORETURN	exec_cmd(t_command_line *cmd)
+void			cmd_ae_payload(t_command_line *cmd, int argc, char **argv)
 {
-	cmd->identity->cmd_executor(cmd);
-	exit(EXIT_SUCCESS);
+	(void)cmd;
+	(void)argc;
+	(void)argv;
 }

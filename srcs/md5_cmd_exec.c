@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/25 01:02:45 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 22:02:37 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 00:58:59 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,16 @@ static void	print_string_digest(t_command_line *cmd
 								, char *string
 								, uint32_t *digest)
 {
-	if (!cmd->flags.md5.q && !cmd->flags.md5.r)
+	if (!cmd->info.hash.flags.md5.q && !cmd->info.hash.flags.md5.r)
 		printf("%s (\"%s\") = ", cmd->command_name, string);
-	if (cmd->flags.md5.r)
+	if (cmd->info.hash.flags.md5.r)
 	{
-		print_hash(digest, cmd->hash->digest_size, 1);
+		print_hash(digest, cmd->identity->info.hash.digest_size, 1);
 		printf(" \"%s\"", string);
 	}
 	else
 	{
-		print_hash(digest, cmd->hash->digest_size, 1);
+		print_hash(digest, cmd->identity->info.hash.digest_size, 1);
 	}
 	printf("\n");
 }
@@ -35,16 +35,16 @@ static void	print_file_digest(t_command_line *cmd
 								, char *name
 								, uint32_t *digest)
 {
-	if (!cmd->flags.md5.q && !cmd->flags.md5.r)
+	if (!cmd->info.hash.flags.md5.q && !cmd->info.hash.flags.md5.r)
 		printf("%s (%s) = ", cmd->command_name, name);
-	if (cmd->flags.md5.r)
+	if (cmd->info.hash.flags.md5.r)
 	{
-		print_hash(digest, cmd->hash->digest_size, 1);
+		print_hash(digest, cmd->identity->info.hash.digest_size, 1);
 		printf(" %s", name);
 	}
 	else
 	{
-		print_hash(digest, cmd->hash->digest_size, 1);
+		print_hash(digest, cmd->identity->info.hash.digest_size, 1);
 	}
 	printf("\n");
 }
@@ -56,16 +56,17 @@ static void	hash_strings(t_command_line *cmd)
 	uint64_t	len;
 
 	i = 0;
-	while (i < cmd->nbr_strings)
+	while (i < cmd->info.hash.nbr_strings)
 	{
-		len = ft_strlen(cmd->strings_to_hash[i]);
-		digest = cmd->hash->hash_function(cmd->strings_to_hash[i], len);
-		assert(hash_tester(cmd->strings_to_hash[i], digest, len
-								, &(t_hash_info){cmd->hash->system_hash_function
-								, cmd->hash->hash_function
-								, cmd->hash->digest_size}));
+		printf("i: %u\n", i);
+		len = ft_strlen(cmd->info.hash.strings_to_hash[i]);
+		digest = cmd->identity->info.hash.hash_function(cmd->info.hash.strings_to_hash[i], len);
+		assert(hash_tester(cmd->info.hash.strings_to_hash[i], digest, len
+								, &(t_hash_info){cmd->identity->info.hash.system_hash_function
+								, cmd->identity->info.hash.hash_function
+								, cmd->identity->info.hash.digest_size}));
 //please fix the hashs of directories...
-		print_string_digest(cmd, cmd->strings_to_hash[i], digest);
+		print_string_digest(cmd, cmd->info.hash.strings_to_hash[i], digest);
 		free(digest);
 		i++;
 	}
@@ -83,11 +84,11 @@ static void	hash_file(t_command_line *cmd, char *filename)
 					, filename}, 0);
 		return ;
 	}
-	digest = cmd->hash->hash_function(message.string, message.len);
+	digest = cmd->identity->info.hash.hash_function(message.string, message.len);
 	assert(hash_tester(message.string, digest, message.len
-					, &(t_hash_info){cmd->hash->system_hash_function
-					, cmd->hash->hash_function
-					, cmd->hash->digest_size}));
+					, &(t_hash_info){cmd->identity->info.hash.system_hash_function
+					, cmd->identity->info.hash.hash_function
+					, cmd->identity->info.hash.digest_size}));
 //please fix the hashs of directories...
 	print_file_digest(cmd, filename, digest);
 	free(message.string);
@@ -99,9 +100,9 @@ static void	hash_files(t_command_line *cmd)
 	uint32_t	i;
 
 	i = 0;
-	while (i < cmd->nbr_files)
+	while (i < cmd->info.hash.nbr_files)
 	{
-		hash_file(cmd, cmd->filenames[i]);
+		hash_file(cmd, cmd->info.hash.filenames[i]);
 		i++;
 	}
 }
@@ -110,9 +111,9 @@ static void	print_stdin_message_digest(t_command_line *cmd
 										, t_string *message
 										, uint32_t *digest)
 {
-	if (cmd->flags.md5.p)
+	if (cmd->info.hash.flags.md5.p)
 		write(1, message->string, message->len);
-	print_hash(digest, cmd->hash->digest_size, 1);
+	print_hash(digest, cmd->identity->info.hash.digest_size, 1);
 	printf("\n");
 }
 
@@ -120,11 +121,11 @@ static void	hash_stdin_message(t_command_line *cmd, t_string message)
 {
 	uint32_t	*digest;
 
-	digest = cmd->hash->hash_function(message.string, message.len);
+	digest = cmd->identity->info.hash.hash_function(message.string, message.len);
 	assert(hash_tester(message.string, digest, message.len
-					, &(t_hash_info){cmd->hash->system_hash_function
-					, cmd->hash->hash_function
-					, cmd->hash->digest_size}));
+					, &(t_hash_info){cmd->identity->info.hash.system_hash_function
+					, cmd->identity->info.hash.hash_function
+					, cmd->identity->info.hash.digest_size}));
 //please fix the hashs of directories...
 	print_stdin_message_digest(cmd, &message, digest);
 	free(digest);
@@ -135,7 +136,7 @@ void	md5_cmd_exec(t_command_line *cmd)
 	t_string	stdin_message;
 
 	hash_strings(cmd);
-	if (cmd->flags.md5.p || (!cmd->nbr_strings && !cmd->nbr_files))
+	if (cmd->info.hash.flags.md5.p || (!cmd->info.hash.nbr_strings && !cmd->info.hash.nbr_files))
 	{
 		stdin_message = read_message_from_stdin();
 		hash_stdin_message(cmd, stdin_message);

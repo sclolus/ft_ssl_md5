@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/25 00:24:25 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 22:19:47 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 00:41:51 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,27 +14,27 @@
 
 static int32_t			echo_stdin_callback(t_command_line *cmd)
 {
-	cmd->flags.md5.p = 1;
+	cmd->info.hash.flags.md5.p = 1;
 	return (0);
 }
 
 static int32_t			quiet_mode_callback(t_command_line *cmd)
 {
-	cmd->flags.md5.q = 1;
+	cmd->info.hash.flags.md5.q = 1;
 	return (0);
 }
 
 static int32_t			reverse_callback(t_command_line *cmd)
 {
-	cmd->flags.md5.r = 1;
+	cmd->info.hash.flags.md5.r = 1;
 	return (0);
 }
 
 static int32_t			given_string_callback(t_command_line *cmd)
 {
-	cmd->flags.md5.s = 1;
-	cmd->strings_to_hash[cmd->nbr_strings] = g_optarg;
-	cmd->nbr_strings++;
+	cmd->info.hash.flags.md5.s = 1;
+	cmd->info.hash.strings_to_hash[cmd->info.hash.nbr_strings] = g_optarg;
+	cmd->info.hash.nbr_strings++;
 	return (0);
 }
 
@@ -50,7 +50,7 @@ t_flags					*parse_sha256(int argc
 	};
 	char							retrieved_opt;
 
-	ft_bzero(&cmd->flags, sizeof(t_flags));
+	ft_bzero(&cmd->info.hash.flags, sizeof(t_flags));
 	while ((retrieved_opt = (char)ft_getopt(argc, argv
 										, SHA256_PARSING_FLAGS)) != -1)
 	{
@@ -63,7 +63,7 @@ t_flags					*parse_sha256(int argc
 							- SHA256_FLAGS)].callback(cmd))
 			break ;
 	}
-	cmd->filenames = argv + g_optind;
-	cmd->nbr_files = (uint64_t)argc - (uint64_t)g_optind;
-	return (&cmd->flags);
+	cmd->info.hash.filenames = argv + g_optind;
+	cmd->info.hash.nbr_files = (uint64_t)argc - (uint64_t)g_optind;
+	return (&cmd->info.hash.flags);
 }

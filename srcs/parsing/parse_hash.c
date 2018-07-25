@@ -1,20 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec_cmd.c                                         :+:      :+:    :+:   */
+/*   parse_hash.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/24 22:39:42 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 00:43:53 by sclolus          ###   ########.fr       */
+/*   Created: 2018/07/25 23:56:19 by sclolus           #+#    #+#             */
+/*   Updated: 2018/07/26 00:58:11 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl_md5.h"
-#include <CommonCrypto/CommonDigest.h>
 
-NORETURN	exec_cmd(t_command_line *cmd)
+static void				cmd_hash_allocate_strings(t_command_line *cmd, int argc)
 {
-	cmd->identity->cmd_executor(cmd);
-	exit(EXIT_SUCCESS);
+	if (!(cmd->info.hash.strings_to_hash = malloc(sizeof(char*) * (uint64_t)argc)))
+		exit(EXIT_FAILURE);
+	ft_bzero(cmd->info.hash.strings_to_hash, sizeof(char*) * (uint64_t)argc);
+}
+
+void					cmd_hash_payload(t_command_line *cmd, int argc, char **argv)
+{
+	(void)argv;
+	cmd_hash_allocate_strings(cmd, argc);
 }
