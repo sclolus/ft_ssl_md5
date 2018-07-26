@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/26 01:40:15 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 05:45:05 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 18:49:55 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,6 @@ uint8_t		*encode_base64(uint8_t *clear, uint64_t len, t_se_key *key)
 	cipher_index = 0;
 	if (!(cipher = (uint8_t *)malloc((len * 8) / 24 * 4 + !!(len % 3) * 4 + 1)))
 		ft_error_exit(1, (char*[]){MALLOC_FAILURE}, EXIT_FAILURE);
-	printf("%llu %llu\n", (len * 8) / 24 * 4, (len * 4) / 3);
 	cipher[(len * 8) / 24 * 4 + (!!(len % 3)) * 4] = '\0';
 	while (i + 2 < len)
 	{

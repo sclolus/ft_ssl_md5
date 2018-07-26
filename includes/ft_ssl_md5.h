@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 05:31:41 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 18:48:42 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdlib.h>
 # include <assert.h> //
 # include <fcntl.h>
+# include <sys/types.h>
 
 # define INLINE __attribute__((always_inline)) inline
 # define NORETURN __attribute__((noreturn)) void
