@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 15:26:39 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 01:02:32 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 02:49:40 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static t_cmd_type		get_cmd_type(char *command_name)
 	uint32_t	i;
 
 	i = 0;
-	while (i < sizeof(g_supported_cmds) / sizeof(t_hash_identity))
+	while (i < sizeof(g_supported_cmds) / sizeof(*g_supported_cmds))
 	{
 		if (!ft_strcmp(command_name, g_supported_cmds[i].name))
 			return (g_supported_cmds[i].type);

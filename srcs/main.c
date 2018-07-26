@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 02:14:47 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 01:03:49 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 05:30:45 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ const t_cmd_identity	g_supported_cmds[SUPPORTED_TYPES] = {
 	{"sha256", parse_sha256, sha256_cmd_exec, (t_cmd_internal){(t_hash_identity){sha256_hash, CC_SHA256, 8 * 4}}, SHA256, HASH},
 	{"sha224", parse_sha256, sha256_cmd_exec, (t_cmd_internal){(t_hash_identity){sha224_hash, CC_SHA224, 7 * 4}}, SHA224, HASH},
 	{"md5", parse_md5, md5_cmd_exec, (t_cmd_internal){(t_hash_identity){md5_hash, CC_MD5, 4 * 4}}, MD5, HASH},
-	{"md5", parse_md5, md5_cmd_exec, (t_cmd_internal){(t_hash_identity){md5_hash, CC_MD5, 4 * 4}}, MD5, SYMMETRIC_ENCRYPTION},
+	{"base64", parse_base64, base64_cmd_exec, (t_cmd_internal){.se = {encode_base64, decode_base64}}, BASE64, SYMMETRIC_ENCRYPTION},
 	{"md5", parse_md5, md5_cmd_exec, (t_cmd_internal){(t_hash_identity){md5_hash, CC_MD5, 4 * 4}}, MD5, SYMMETRIC_ENCRYPTION},
 };
 

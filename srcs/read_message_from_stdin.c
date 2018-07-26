@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/25 01:52:53 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/25 02:30:22 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 03:07:02 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ t_string	read_message_from_stdin(void)
 	string.capacity = 256;
 	string.len = 0;
 	string.string[0] = '\0';
-	if (-1 == (ft_get_file_content_string(&string, 0)))
+	if (-1 == (ft_get_file_content_string(&string, STDIN_FILENO)))
 	{
 		free(string.string);
 		return ((t_string){0, 0, NULL});

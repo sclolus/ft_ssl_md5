@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 00:55:17 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 05:31:41 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <assert.h> //
+# include <fcntl.h>
 
 # define INLINE __attribute__((always_inline)) inline
 # define NORETURN __attribute__((noreturn)) void
@@ -62,10 +63,14 @@ typedef struct s_hash_identity {
 	uint64_t				digest_size;
 }				t_hash_identity;
 
+typedef void t_se_key;
+typedef uint8_t	*(*t_se_encode_function)(uint8_t *clear, uint64_t len, t_se_key *key);
+typedef uint8_t	*(*t_se_decode_function)(uint8_t *cipher, uint64_t len, t_se_key *key);
+
 typedef struct	s_se_identity
 {
-	char	*key; // non contractual
-	char	*salt; // non contractual
+	t_se_encode_function	encode_function;
+	t_se_decode_function	decode_function;
 }				t_se_identity;
 
 typedef struct	s_ae_identity
@@ -125,10 +130,20 @@ typedef struct	s_md5_flags
 	uint8_t	pad : 4;
 }				t_md5_flags;
 
+typedef struct	s_base64_flags
+{
+	uint8_t	d : 1;
+	uint8_t	e : 1;
+	uint8_t	i : 1;
+	uint8_t	o : 1;
+	uint8_t	pad : 4;
+}				t_base64_flags;
+
 typedef union	u_flags
 {
 	t_md5_flags		md5;
 	t_sha256_flags	sha256;
+	t_base64_flags	base64;
 }				t_flags;
 
 typedef struct	s_hash_cmd
@@ -143,7 +158,10 @@ typedef struct	s_hash_cmd
 
 typedef struct	s_se_cmd
 {
-	const t_se_identity	*se;
+	char		*input_file;
+	char		*output_file;
+	t_flags		flags;
+	uint8_t		pad[7];
 }				t_se_cmd;
 
 typedef union	u_cmd_info
@@ -175,10 +193,12 @@ void			cmd_ae_payload(t_command_line *cmd, int argc, char **argv);
 # define MD5_FLAGS "pqrs"
 # define SHA256_PARSING_FLAGS "pqrs:"
 # define SHA256_FLAGS "pqrs"
-
+# define BASE64_PARSING_FLAGS "dei:o:"
+# define BASE64_FLAGS "deio"
 
 t_flags			*parse_md5(int argc, char **argv, t_command_line *cmd);
 t_flags			*parse_sha256(int argc, char **argv, t_command_line *cmd);
+t_flags			*parse_base64(int argc, char **argv, t_command_line *cmd);
 void			print_memory(const void *addr, size_t size);
 
 /*
@@ -207,14 +227,25 @@ uint32_t	*sha224_hash(void *clear, uint64_t len);
 uint64_t	*sha512_hash(void *clear, uint64_t len);
 
 /*
+** Symmetric encryption functions
+*/
+
+# define BASE64_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/="
+
+uint8_t		*encode_base64(uint8_t *clear, uint64_t len, t_se_key *key);
+uint8_t		*decode_base64(uint8_t *cipher, uint64_t len, t_se_key *key);
+
+/*
 ** Command line execution
 */
 
 NORETURN	exec_cmd(t_command_line *cmd);
 void		md5_cmd_exec(t_command_line *cmd);
 void		sha256_cmd_exec(t_command_line *cmd);
+void		base64_cmd_exec(t_command_line *cmd);
 
 t_string	read_message_from_stdin(void);
+t_string	read_input_file(char *filename);
 void		print_hash(uint32_t *digest, uint64_t size, int32_t swap_endian);
 void		print_memory(const void *addr, size_t size);
 
@@ -229,7 +260,7 @@ typedef struct	s_hash_info
 	uint64_t				digest_size;
 }				t_hash_info;
 
-# define MAX_RANDOM_MESSAGE_LEN 512
+# define MAX_RANDOM_MESSAGE_LEN 512 * 4 + 11
 # define RANDOM_INIT 0xBADA55
 
 int			hash_tester(void *message

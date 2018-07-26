@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/20 15:21:43 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 01:00:57 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 02:16:38 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,6 @@ static int32_t	given_string_callback(t_command_line *cmd)
 {
 	cmd->info.hash.flags.md5.s = 1;
 	cmd->info.hash.strings_to_hash[cmd->info.hash.nbr_strings] = g_optarg;
-	printf("info.hash.nbr_strings is now: %llu, current string to hash is %p: %s\n", cmd->info.hash.nbr_strings + 1
-		   , (void*)cmd->info.hash.strings_to_hash[cmd->info.hash.nbr_strings]
-		   , cmd->info.hash.strings_to_hash[cmd->info.hash.nbr_strings]);
 	cmd->info.hash.nbr_strings++;
 	return (0);
 }

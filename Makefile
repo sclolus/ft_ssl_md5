@@ -11,14 +11,19 @@ SRC= srcs/main.c \
 	srcs/parsing/parse_hash.c \
 	srcs/parsing/parse_se.c \
 	srcs/parsing/parse_ae.c \
+	srcs/parsing/parse_base64.c \
 	srcs/usage.c \
 	srcs/print_hash.c \
 	srcs/exec_cmd.c \
 	srcs/md5_cmd_exec.c \
 	srcs/sha256_cmd_exec.c \
+	srcs/base64_cmd_exec.c \
 	srcs/read_message_from_stdin.c \
+	srcs/read_input_file.c \
 	srcs/sha224.c \
-	srcs/sha512.c
+	srcs/sha512.c \
+	srcs/se/encode_base64.c \
+	srcs/se/decode_base64.c
 
 HDRS= includes/ft_ssl_md5.h
 OBJ= $(SRC:.c=.o)
