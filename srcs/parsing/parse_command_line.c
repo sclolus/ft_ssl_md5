@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/19 15:26:39 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 02:49:40 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 21:30:08 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,31 +39,6 @@ static t_cmd_type		get_cmd_type(char *command_name)
 	}
 	return (SUPPORTED_TYPES);
 }
-
-/* static void				display_command_line(t_command_line *cmd) */
-/* { */
-/* 	uint32_t	i; */
-
-/* 	i = 0; */
-/* 	if (cmd) */
-/* 		return ; */
-/* 	printf("name: %s\n", cmd->command_name); */
-/* 	while (i < cmd->nbr_strings) */
-/* 	{ */
-/* 		printf("%u strings_to_hash: %s\n", i, cmd->strings_to_hash[i]); */
-/* 		i++; */
-/* 	} */
-/* 	while (i < cmd->nbr_files) */
-/* 	{ */
-/* 		printf("%u filenames: %s\n", i, cmd->filenames[i]); */
-/* 		i++; */
-/* 	} */
-/* 	printf("type: %d\n", (int)cmd->type); */
-/* 	printf("flags: p: %hhu q: %hhu  r: %hhu s: %hhu\n", cmd->flags.md5.p */
-/* 		, cmd->flags.md5.q */
-/* 		, cmd->flags.md5.r */
-/* 		, cmd->flags.md5.s); */
-/* } */
 
 typedef void	(*t_cmd_parse_payloads)(t_command_line *, int, char **);
 
@@ -100,6 +75,5 @@ t_command_line			*parse_command_line(int argc, char **argv)
 		}
 		i++;
 	}
-//	display_command_line(&cmd);
 	return (&cmd);
 }

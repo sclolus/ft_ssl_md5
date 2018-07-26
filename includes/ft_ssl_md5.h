@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 18:48:42 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/07/26 21:46:24 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,11 +140,26 @@ typedef struct	s_base64_flags
 	uint8_t	pad : 4;
 }				t_base64_flags;
 
+typedef struct	s_des_flags
+{
+	uint8_t	a : 1;
+	uint8_t	d : 1;
+	uint8_t	e : 1;
+	uint8_t	i : 1;
+	uint8_t	k : 1;
+	uint8_t	o : 1;
+	uint8_t	p : 1;
+	uint8_t	s : 1;
+	uint8_t	v : 1;
+	uint8_t	pad : 7;
+}				t_des_flags;
+
 typedef union	u_flags
 {
 	t_md5_flags		md5;
 	t_sha256_flags	sha256;
 	t_base64_flags	base64;
+	t_des_flags		des;
 }				t_flags;
 
 typedef struct	s_hash_cmd
@@ -154,15 +169,19 @@ typedef struct	s_hash_cmd
 	uint64_t				nbr_files;
 	char					**filenames;
 	t_flags					flags;
-	uint8_t					pad[7];
+	uint8_t					pad[6];
 }				t_hash_cmd;
 
 typedef struct	s_se_cmd
 {
 	char		*input_file;
 	char		*output_file;
+	char		*key;
+	char		*password;
+	char		*init_vector;
+	char		*salt;
 	t_flags		flags;
-	uint8_t		pad[7];
+	uint8_t		pad[6];
 }				t_se_cmd;
 
 typedef union	u_cmd_info
@@ -196,10 +215,13 @@ void			cmd_ae_payload(t_command_line *cmd, int argc, char **argv);
 # define SHA256_FLAGS "pqrs"
 # define BASE64_PARSING_FLAGS "dei:o:"
 # define BASE64_FLAGS "deio"
+# define DES_PARSING_FLAGS "adei:k:o:p:s:v:"
+# define DES_FLAGS "adeikopsv"
 
 t_flags			*parse_md5(int argc, char **argv, t_command_line *cmd);
 t_flags			*parse_sha256(int argc, char **argv, t_command_line *cmd);
 t_flags			*parse_base64(int argc, char **argv, t_command_line *cmd);
+t_flags			*parse_des(int argc, char **argv, t_command_line *cmd);
 void			print_memory(const void *addr, size_t size);
 
 /*
@@ -236,6 +258,9 @@ uint64_t	*sha512_hash(void *clear, uint64_t len);
 uint8_t		*encode_base64(uint8_t *clear, uint64_t len, t_se_key *key);
 uint8_t		*decode_base64(uint8_t *cipher, uint64_t len, t_se_key *key);
 
+uint8_t		*encode_des(uint8_t *clear, uint64_t len, t_se_key *key);
+uint8_t		*decode_des(uint8_t *cipher, uint64_t len, t_se_key *key);
+
 /*
 ** Command line execution
 */
@@ -244,6 +269,7 @@ NORETURN	exec_cmd(t_command_line *cmd);
 void		md5_cmd_exec(t_command_line *cmd);
 void		sha256_cmd_exec(t_command_line *cmd);
 void		base64_cmd_exec(t_command_line *cmd);
+void		des_cmd_exec(t_command_line *cmd);
 
 t_string	read_message_from_stdin(void);
 t_string	read_input_file(char *filename);
