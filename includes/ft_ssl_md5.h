@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/07/26 21:46:24 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/01 06:24:31 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ typedef struct s_hash_identity {
 	uint64_t				digest_size;
 }				t_hash_identity;
 
-typedef void t_se_key;
+typedef uint8_t t_se_key;
 typedef uint8_t	*(*t_se_encode_function)(uint8_t *clear, uint64_t len, t_se_key *key);
 typedef uint8_t	*(*t_se_decode_function)(uint8_t *cipher, uint64_t len, t_se_key *key);
 
@@ -296,7 +296,14 @@ int			hash_tester(void *message
 					   , t_hash_info *hash_info);
 NORETURN	hash_fuzzer(t_hash_info *hash_info);
 
+/*
+** Useful functions
+*/
 
+uint8_t	*bit_permutation(uint8_t *data
+						 , uint32_t size
+						 , const uint32_t *permutation_table
+						 , uint8_t *output);
 /*
 ** Error handling
 */

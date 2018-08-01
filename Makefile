@@ -27,7 +27,8 @@ SRC= srcs/main.c \
 	srcs/se/encode_base64.c \
 	srcs/se/decode_base64.c \
 	srcs/se/decode_des.c \
-	srcs/se/encode_des.c
+	srcs/se/encode_des.c \
+	srcs/bit_permutation.c
 
 HDRS= includes/ft_ssl_md5.h
 OBJ= $(SRC:.c=.o)
