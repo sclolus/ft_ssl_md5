@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/26 21:31:33 by sclolus           #+#    #+#             */
-/*   Updated: 2018/08/01 07:51:17 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/01 08:36:56 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,12 +108,92 @@ const uint32_t	g_expansion_table[48] = {
 	28, 29, 30, 31, 32, 1,
 };
 
+const uint32_t	g_pc_1[56] = {
+	57, 49, 41, 33, 25, 17, 9,
+	1, 58, 50, 42, 34, 26, 18,
+	10, 2, 59, 51, 43, 35, 27,
+	19, 11, 3, 60, 52, 44, 36,
+	63, 55, 47, 39, 31, 23, 15,
+	7, 62, 54, 46, 38, 30, 22,
+	14, 6, 61, 53, 45, 37, 29,
+	21, 13, 5, 28, 20, 12, 4,
+};
 
-static uint8_t	*cipher_des(t_des_ctx *ctx)
+const uint32_t	g_pc_2[48] = {
+	14, 17, 11, 24, 1, 5,
+	3, 28, 15, 6, 21, 10,
+	23, 19, 12, 4, 26, 8,
+	16, 7, 27, 20, 13, 2,
+	41, 52, 31, 37, 47, 55,
+	30, 40, 51, 45, 33, 48,
+	44, 49, 39, 56, 34, 53,
+	46, 42, 50, 36, 29, 32,
+};
+
+const uint32_t	g_left_shift_schedule[16] = {
+	1,
+	1,
+	2,
+	2,
+	2,
+	2,
+	2,
+	2,
+	1,
+	2,
+	2,
+	2,
+	2,
+	2,
+	2,
+	1,
+};
+
+/// The permuted choice 1 function
+/// returns a 56-bits value, the 8 most significant bits of the 64-bits encoded value should be ignored
+static uint64_t	permuted_choice_1(uint8_t *key)
 {
-	(void)ctx;
-	return (NULL);
+	uint64_t	pc;
+
+	*(uint64_t*)(void*)bit_permutation(key, 56, g_pc_1, (uint8_t*)&pc) >>= 8;
+	return (pc);
 }
+
+/// The permuted choice 2 function
+/// returns a 48-bits value, the 16 most significant bits of the 64-bits encoded value should be ignored
+/// the input value is the concatenation of the C() and D() values, with is a 56-bits value.
+static uint64_t	permuted_choice_2(uint64_t cd)
+{
+	uint64_t	pc;
+
+	*(uint64_t*)(void*)bit_permutation((uint8_t*)&cd, 48, g_pc_2, (uint8_t*)&pc) >>= 16;
+	return (pc);
+}
+
+/// The key schedule function returns a block K_n composed of bits from the KEY
+/// It takes as inputs the `key` and its subscript `n`
+static uint64_t	key_schedule(uint8_t *key, uint8_t n)
+{
+	(void)(key);
+	(void)n;
+	uint64_t	tmp_pc;
+	uint8_t		i;
+	uint32_t	c;
+	uint32_t	d;
+
+	tmp_pc = permuted_choice_1(key);
+	c = tmp_pc >> 32;
+	d = tmp_pc & 0x00000000ffffffff;
+	i = 0;
+	while (i < n)
+	{
+		c = left_rotate_32(c, g_left_shift_schedule[i]);
+		d = left_rotate_32(d, g_left_shift_schedule[i]);
+		i++;
+	}
+	return (permuted_choice_2(((uint64_t)c << 32) | (uint64_t)d));
+}
+
 
 /// The permutation function used in the definition of the cipher function f of des
 /// it takes a 32-bits input block and shuffles it bits
@@ -203,6 +283,16 @@ static void		test_selection_function(void)
 	}
 }
 
+
+static uint8_t	*cipher_des(t_des_ctx *ctx)
+{
+	uint64_t	k_n;
+	(void)ctx;
+
+	k_n = key_schedule(ctx->key, 1);
+	return (NULL);
+}
+
 uint8_t	*encode_des(uint8_t *clear, uint64_t len, t_se_key *key)
 {
 	uint8_t		*cipher;
@@ -238,6 +328,7 @@ uint8_t	*encode_des(uint8_t *clear, uint64_t len, t_se_key *key)
 	memcpy(ctx.data, permuted_input, 6);
 	printf("-------CIPHER_PERMUTATION--------\n");
 	print_memory((permuted_input = cipher_permutation_function(&ctx)), 4);
+	cipher_des(&ctx);
 	if (1)
 		exit(EXIT_SUCCESS);
 	return (NULL);

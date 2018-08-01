@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/01 04:56:26 by sclolus           #+#    #+#             */
-/*   Updated: 2018/08/01 07:39:24 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/01 08:30:42 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ extern const uint32_t	g_inverse_permutation_table[64];
 extern const uint32_t	g_expansion_table[48];
 extern const uint8_t	g_selection_tables[8][64];
 extern const uint32_t	g_cipher_permutation_table[32];
+extern const uint32_t	g_pc_1[56];
+extern const uint32_t	g_pc_2[48];
+extern const uint32_t	g_left_shift_schedule[16];
 
 /*
 ** Error handling
