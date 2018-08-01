@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/26 21:31:33 by sclolus           #+#    #+#             */
-/*   Updated: 2018/08/01 08:36:56 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/01 09:00:16 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,12 +197,13 @@ static uint64_t	key_schedule(uint8_t *key, uint8_t n)
 
 /// The permutation function used in the definition of the cipher function f of des
 /// it takes a 32-bits input block and shuffles it bits
-static uint8_t	*cipher_permutation_function(t_des_ctx *ctx)
+static uint32_t	cipher_permutation_function(uint32_t selected_bits)
 {
-	static uint8_t	output[32 / (sizeof(uint8_t) * 8)];
+	uint32_t	permuted_output;
 
-	ft_bzero(output, sizeof(output));
-	return (bit_permutation(ctx->data, 32, g_cipher_permutation_table, output));
+	permuted_output = 0; //might not be needed
+	bit_permutation((uint8_t*)&selected_bits, 32, g_cipher_permutation_table, (uint8_t*)&permuted_output);
+	return (permuted_output);
 }
 
 /// The selections function(s) for the cipher function f
@@ -224,21 +225,23 @@ static uint8_t	selection_function(uint8_t block, uint8_t n)
 /// actually a trick on the implementation of bit_permutation that won't overflow
 /// if the indexies in the table are all inferior to the size of the input data
 
-static uint8_t	*expansion_function(t_des_ctx *ctx)
+static uint64_t	expansion_function(uint32_t block)
 {
-	static uint8_t	output[48 / (sizeof(uint8_t) * 8)];
+	uint64_t expanded_block;
 
-	ft_bzero(output, sizeof(output));
-	return (bit_permutation(ctx->data, 48, g_expansion_table, output));
+	expanded_block = 0; // might not be needed
+	bit_permutation((uint8_t*)&block, 48, g_expansion_table, (uint8_t*)&expanded_block);
+	return (expanded_block);
 }
 
 /// Returns a static permuted input block for the cipher function of des
-static uint8_t	*apply_initial_permutation(t_des_ctx *ctx)
+static uint64_t	apply_initial_permutation(t_des_ctx *ctx)
 {
-	static uint8_t	output[64 / (sizeof(uint8_t) * 8)];
+	uint64_t	permuted_block;
 
-	ft_bzero(output, sizeof(output));
-	return (bit_permutation(ctx->data, 64, g_initial_permutation_table, output));
+	permuted_block = 0; // migth not be needed
+	bit_permutation(ctx->data, 64, g_initial_permutation_table, (uint8_t*)&permuted_block);
+	return (permuted_block);
 }
 
 /// Returns a static permuted output block for the finalization of the des algorithm.
@@ -283,14 +286,22 @@ static void		test_selection_function(void)
 	}
 }
 
-
-static uint8_t	*cipher_des(t_des_ctx *ctx)
+static uint64_t	cipher_des(uint64_t r, uint64_t k_n)
 {
-	uint64_t	k_n;
-	(void)ctx;
+	uint64_t	blocks;
+	uint32_t	selected_bits;
+	uint8_t		i;
 
-	k_n = key_schedule(ctx->key, 1);
-	return (NULL);
+	i = 0;
+	blocks = k_n ^ expansion_function(r);
+	selected_bits = 0;
+	while (i < 8)
+	{
+		selected_bits |= selection_function((uint8_t)(blocks >> (((5 - i) * 6))) & 0x3f, i) << (25 - i * 6); //migth be 26
+		i++;
+	}
+
+	return (cipher_permutation_function(blocks));
 }
 
 uint8_t	*encode_des(uint8_t *clear, uint64_t len, t_se_key *key)
