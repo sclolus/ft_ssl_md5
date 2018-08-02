@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/08/01 04:56:26 by sclolus           #+#    #+#             */
-/*   Updated: 2018/08/01 22:39:02 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/02 03:48:33 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,10 @@
 
 typedef struct	s_des_context
 {
-	uint8_t		*data;
+	uint64_t	data;
 	uint8_t		*cipher;
 	t_se_key	*key;
+	uint64_t	subkeys[16];
 	uint64_t	total_len;
 }				t_des_ctx;
 

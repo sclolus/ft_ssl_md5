@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/26 21:31:33 by sclolus           #+#    #+#             */
-/*   Updated: 2018/08/02 00:09:46 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/02 08:18:50 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,12 +151,33 @@ const uint32_t	g_left_shift_schedule[16] = {
 
 /// The permuted choice 1 function
 /// returns a 56-bits value, the 8 most significant bits of the 64-bits encoded value should be ignored
-static uint64_t	permuted_choice_1(uint8_t *key)
+static uint64_t	permuted_choice_1(const uint8_t *key)
 {
 	uint64_t	pc;
+	uint64_t	be_key;
 
-	*(uint64_t*)(void*)bit_permutation(key, 56, g_pc_1, (uint8_t*)&pc) >>= 8;
+	be_key = (*(const uint64_t*)(const void*)key);
+	pc = 0;
+	*(uint64_t*)(void*)bit_permutation((uint8_t*)&be_key, 56, g_pc_1, (uint8_t*)&pc) >>= 8;
 	return (pc);
+}
+
+static void		test_permuted_choice_1(void)
+{
+	const uint64_t key = (0x0606060606060606);
+	const uint64_t expected_result = 0x0000000ffff000 >> 8;
+	uint64_t		result;
+
+	result = permuted_choice_1((const uint8_t*)(const void*)&key);
+	if (expected_result != result) {
+		printf("$$$$$$$test_permuted_choice_1$$$$$$\n");
+		printf("----expected_result----\n");
+		print_memory(&expected_result, 8);
+		printf("----result----\n");
+		print_memory(&result, 8);
+		printf("----trusted_result----\n");
+	}
+	assert(expected_result == result);
 }
 
 /// The permuted choice 2 function
@@ -166,6 +187,7 @@ static uint64_t	permuted_choice_2(uint64_t cd)
 {
 	uint64_t	pc;
 
+	pc = 0;
 	*(uint64_t*)(void*)bit_permutation((uint8_t*)&cd, 48, g_pc_2, (uint8_t*)&pc) >>= 16;
 	return (pc);
 }
@@ -194,6 +216,20 @@ static uint64_t	key_schedule(uint8_t *key, uint8_t n)
 	return (permuted_choice_2(((uint64_t)c << 28) | (uint64_t)d));
 }
 
+static void	get_des_subkeys(t_des_ctx *ctx)
+{
+	uint32_t	i;
+
+	i = 0;
+	while (i < 16)
+	{
+		ctx->subkeys[i] = key_schedule(ctx->key, (uint8_t)i);
+		/* printf("subkey: %u\n", i); */
+		/* print_memory(ctx->subkeys + i, 8); */
+		i++;
+	}
+}
+
 
 /// The permutation function used in the definition of the cipher function f of des
 /// it takes a 32-bits input block and shuffles it bits
@@ -219,6 +255,35 @@ static uint8_t	selection_function(uint8_t block, uint8_t n)
 	row_index = ((block & 0x20) >> 0x4) | (block & 0x1);
 	column_index = (block & 0x1e) >> 0x1;
 	return (g_selection_tables[n][row_index * 16 + column_index]);
+}
+
+static void		test_selection_function(void)
+{
+	uint32_t	i;
+	uint8_t		row_index;
+	uint8_t		column_index;
+
+	i = 0;
+	while (i < 8)
+	{
+		row_index = 0;
+		while (row_index < 4)
+		{
+			column_index = 0;
+			while (column_index < 16)
+			{
+				uint8_t input = (uint8_t)((row_index & 0x2) << 4) | (uint8_t)(row_index & 0x1) | (uint8_t)(column_index << 0x1);
+				uint8_t output = selection_function(input, (uint8_t)i);
+				uint8_t expected = g_selection_tables[i][row_index * 16 + column_index];
+				/* printf("n: %u, row_index: %hhu, column_index: %hhu\n", i, row_index, column_index); */
+				/* printf("output: %hhu, expected: %hhu\n", output, expected); */
+				assert( output == expected );
+				column_index++;
+			}
+			row_index++;
+		}
+		i++;
+	}
 }
 
 /// The expansion function for the cipher function f
@@ -257,36 +322,6 @@ static uint64_t	apply_inverse_permutation(uint64_t preoutput)
 	return (output);
 }
 
-
-static void		test_selection_function(void)
-{
-	uint32_t	i;
-	uint8_t		row_index;
-	uint8_t		column_index;
-
-	i = 0;
-	while (i < 8)
-	{
-		row_index = 0;
-		while (row_index < 4)
-		{
-			column_index = 0;
-			while (column_index < 16)
-			{
-				uint8_t input = (uint8_t)((row_index & 0x2) << 4) | (uint8_t)(row_index & 0x1) | (uint8_t)(column_index << 0x1);
-				uint8_t output = selection_function(input, (uint8_t)i);
-				uint8_t expected = g_selection_tables[i][row_index * 16 + column_index];
-				/* printf("n: %u, row_index: %hhu, column_index: %hhu\n", i, row_index, column_index); */
-				/* printf("output: %hhu, expected: %hhu\n", output, expected); */
-				assert( output == expected );
-				column_index++;
-			}
-			row_index++;
-		}
-		i++;
-	}
-}
-
 static uint32_t	cipher_des(uint32_t r, uint64_t k_n)
 {
 	uint64_t	blocks;
@@ -314,13 +349,13 @@ static uint64_t	des_encrypt_block(t_des_ctx *ctx)
 	uint64_t	permuted_input;
 
 	i = 0;
-	permuted_input = apply_initial_permutation(*(uint64_t*)(void*)(ctx->data + ctx->total_len));
-	permuted_input = swap_int64(permuted_input);
+	permuted_input = apply_initial_permutation(ctx->data);
+//	permuted_input = swap_int64(permuted_input);
 	l = (permuted_input) >> 32;
 	r = (permuted_input) & 0x00000000ffffffff;
 	while (i < 16)
 	{
-		ciphered_32bits = l ^ cipher_des(r, key_schedule(ctx->key, (uint8_t)i));
+		ciphered_32bits = l ^ cipher_des(r, ctx->subkeys[i]);
 		l = r;
 		r = ciphered_32bits;
 		/* printf("---------L STATE: %u\n", i); */
@@ -332,32 +367,130 @@ static uint64_t	des_encrypt_block(t_des_ctx *ctx)
 	}
 	ctx->total_len += 8;
 	preoutput = ((uint64_t)r) << 32 | (uint64_t)l;
-	return (swap_int64(apply_inverse_permutation(preoutput)));
+	return ((apply_inverse_permutation(preoutput)));
+}
+
+static uint64_t	bits64_permutation(uint64_t source, const uint32_t *permutation_table);
+static void	test_bit_permutation(void)
+{
+	const uint32_t	test_table[64] = {
+		64, 63, 62, 61, 60, 59, 58, 57, 56, 55, 54, 53, 52, 51,
+		50, 49, 48, 47, 46, 45, 44, 43, 42, 41, 40, 39, 38, 37,
+		36, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25, 24, 23,
+		22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9,
+		8, 7, 6, 5, 4, 3, 2, 1
+	};
+
+	const uint64_t input = 0x5555555555555500;
+	uint64_t output = 0;
+	const uint64_t expected_output = 0x00AAAAAAAAAAAAAA;
+
+//	bit_permutation((const uint8_t*)(const void*)&input, 56, test_table, (uint8_t*)(void*)&output);
+	output = bits64_permutation(input, test_table);
+	if (output != expected_output) {
+		printf("$$$$$test_bit_permutation$$$$$$\n");
+		printf("-------expected_output------\n");
+		print_memory(&expected_output, 8);
+		printf("-------output------\n");
+		print_memory(&output, 8);
+	}
+	assert(output == expected_output);
+}
+
+static void		test_assert_inverse_permutation(void)
+{
+	uint32_t	i;
+	uint32_t	result_inverse_table[64];
+
+	i = 0;
+	while (i < 64)
+	{
+		result_inverse_table[g_initial_permutation_table[i] - 1] = i + 1;
+		i++;
+	}
+	i = 0;
+	assert(!memcmp(result_inverse_table, g_inverse_permutation_table, sizeof(g_inverse_permutation_table)));
+}
+
+static uint64_t	bits64_permutation(uint64_t source, const uint32_t *permutation_table)
+{
+	uint32_t	i;
+	uint64_t	result;
+
+	i = 0U;
+	result = 0U;
+	while (i < 64)
+	{
+		if (source & (0x1UL << (63UL - (permutation_table[i] - 1UL))))
+		{
+			printf("1 ");
+			result |= (uint64_t)(0x1UL << (63UL - i));
+		} else {
+			printf("0 ");
+		}
+		i++;
+	}
+	printf("\n");
+	return (result);
 }
 
 uint8_t	*encode_des(uint8_t *clear, uint64_t len, t_se_key *key)
 {
-	uint8_t		*cipher;
 	t_des_ctx	ctx;
 
-	cipher = NULL;
 	(void)clear;
 	(void)len;
 	(void)key;
-	(void)cipher_des;
-	(void)key_schedule;
-	ctx.data = clear;
+	assert(clear != NULL && key != NULL);
+	ctx.data = *(uint64_t*)(void*)clear;
 	ctx.total_len = 0;
 	ctx.key = key;
-	assert(clear != NULL && key != NULL);
+	if (!(ctx.cipher = (uint8_t*)malloc(len)))
+		return (NULL);
+	(void)get_des_subkeys;
+//	get_des_subkeys(&ctx);
+
 	/* print_memory(clear, 8); */
 	/* printf("------PERMUTATION----------\n"); */
-	/* uint64_t	permuted_input = (uint64_t)apply_initial_permutation(*(uint64_t*)(void*)ctx.data); */
+	/* uint64_t	permuted_input = (uint64_t)apply_initial_permutation(ctx.data); */
 	/* print_memory(&permuted_input, 8); */
 	/* printf("------INVERSE PERMUTATION\n"); */
-	/* memcpy(ctx.data, &permuted_input, 8); */
-	/* permuted_input = (uint64_t)apply_inverse_permutation(*(uint64_t*)(void*)ctx.data); */
+	/* memcpy(&ctx.data, &permuted_input, 8); */
+	/* permuted_input = (uint64_t)apply_inverse_permutation(ctx.data); */
 	/* print_memory(&permuted_input, 8); */
+	uint32_t	table[64];
+	uint32_t	i = 0;
+	while (i < 64)
+	{
+		table[i] = i + 1U;
+		i++;
+	}
+	(void)test_bit_permutation;
+//	test_bit_permutation();
+	test_assert_inverse_permutation();
+	uint64_t	test_permutation;
+	uint64_t	result_permutation;
+	uint64_t	tmp;
+
+	bits64_permutation(ctx.data, table);
+
+	tmp = bits64_permutation(ctx.data, g_initial_permutation_table);
+	print_memory(&tmp, 8);
+	tmp = bits64_permutation(tmp, g_inverse_permutation_table);
+	print_memory(&tmp, 8);
+	assert(bits64_permutation(bits64_permutation(ctx.data, g_initial_permutation_table), g_inverse_permutation_table) == ctx.data);
+
+
+	printf("\n\n-----there-----\n");
+	test_permutation = bits64_permutation(ctx.data, g_initial_permutation_table);
+	result_permutation = apply_initial_permutation(ctx.data);
+	printf("\n\n-----there-----\n");
+	print_memory(&test_permutation, 8);
+	printf("\n");
+	print_memory(&result_permutation, 8);
+	assert(test_permutation == result_permutation);
+	assert(ctx.data == apply_inverse_permutation(apply_initial_permutation(ctx.data)));
+
 	/* memcpy(ctx.data, &permuted_input, 8); */
 	/* printf("-------CURRENT MEMORY---------\n"); */
 	/* print_memory(ctx.data, 4); */
@@ -370,12 +503,16 @@ uint8_t	*encode_des(uint8_t *clear, uint64_t len, t_se_key *key)
 	/* permuted_input = (uint64_t)cipher_permutation_function(*(uint32_t*)(void*)ctx.data); */
 	/* print_memory(&permuted_input, 4); */
 
+	test_permuted_choice_1();
+	test_selection_function();
+
+
 	printf("----------CLEARTEXT-----------\n");
-	print_memory(ctx.data, 8);
+	print_memory(&ctx.data, 8);
+	(void)des_encrypt_block;
 	uint64_t cipher_block = des_encrypt_block(&ctx);
 	printf("-----------CIHPER BLOCK-----------\n");
 	print_memory(&cipher_block, 8);
-	test_selection_function();
 	if (1)
 		exit(EXIT_SUCCESS);
 	return (NULL);
