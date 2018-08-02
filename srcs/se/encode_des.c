@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/26 21:31:33 by sclolus           #+#    #+#             */
-/*   Updated: 2018/08/02 08:18:50 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/02 08:41:42 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,7 @@ static uint64_t	permuted_choice_1(const uint8_t *key)
 	be_key = (*(const uint64_t*)(const void*)key);
 	pc = 0;
 	*(uint64_t*)(void*)bit_permutation((uint8_t*)&be_key, 56, g_pc_1, (uint8_t*)&pc) >>= 8;
-	return (pc);
+ 	return (pc);
 }
 
 static void		test_permuted_choice_1(void)
