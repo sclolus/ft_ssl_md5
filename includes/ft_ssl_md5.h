@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/18 01:54:31 by sclolus           #+#    #+#             */
-/*   Updated: 2018/08/02 03:09:36 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/04 11:15:01 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,10 +300,13 @@ NORETURN	hash_fuzzer(t_hash_info *hash_info);
 ** Useful functions
 */
 
-uint8_t	*bit_permutation(const uint8_t *data
+uint8_t		*str_to_key(char *str);
+uint8_t		*bit_permutation(const uint8_t *data
 						 , uint32_t size
 						 , const uint32_t *permutation_table
 						 , uint8_t *output);
+uint64_t	bits64_permutation(uint64_t source, uint32_t size, const uint32_t *permutation_table);
+uint32_t	bits32_permutation(uint32_t source, uint32_t size, const uint32_t *permutation_table);
 /*
 ** Error handling
 */

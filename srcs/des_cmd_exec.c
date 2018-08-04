@@ -6,7 +6,7 @@
 /*   By: sclolus <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/07/26 21:39:05 by sclolus           #+#    #+#             */
-/*   Updated: 2018/08/01 05:23:19 by sclolus          ###   ########.fr       */
+/*   Updated: 2018/08/04 11:16:33 by sclolus          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,17 @@ void	des_cmd_exec(t_command_line *cmd)
 		output_fd = STDOUT_FILENO;
 	if (cmd->info.se.key == NULL && cmd->info.se.password == NULL)
 		ft_error_exit(1, (char*[]){DES_NO_KEY_OR_PASSWORD}, EXIT_FAILURE);
+
+	if (ft_strlen(cmd->info.se.key) < 16)
+	  ft_error_exit(1, (char*[]){"Invalid key size"}, EXIT_FAILURE); // please test this in openssl
+
+	uint8_t	*key = str_to_key(cmd->info.se.key);
 	if (cmd->info.se.flags.des.e)
-		cipher = encode_des((uint8_t *)message.string, message.len, (uint8_t *)cmd->info.se.key);
+		cipher = encode_des((uint8_t *)message.string, message.len, key);
 	else
 	{
 		printf("cipher: %s\n", message.string);
-		cipher = decode_des((uint8_t *)message.string, message.len, (uint8_t *)cmd->info.se.key);
+		cipher = decode_des((uint8_t *)message.string, message.len, key);
 	} // THE WHITESPACE FOR GOD'S SAKE
 	write(output_fd, cipher, ft_strlen((const char*)cipher));
 
